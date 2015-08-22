@@ -114,40 +114,56 @@ var wdcw = window.wdcw || {};
    *   ]});
    */
   wdcw.tableData = function tableData(registerData) {
-    // Get the data.
-    $.ajax({
-      url: createAPIUrl(),
-      headers: {
-        Authorization: 'token ' + tableau.password
-      },
-      success: function dataRetrieved(response) {
-        var processedData = [];
+    var url = createAPIUrl(),
+        processedData = [];
 
-        alert(JSON.stringify(response, null, 3));
+    getData(url, function getNextData(data, next) {
+      data.forEach(function shapeData(item) {
+        processedData.push(util.flattenData(item, null));
+      });
 
-        // You may need to perform processing to shape the data into an array of
-        // objects where each object is a map of column names to values.
-        response.items.forEach(function shapeData(item) {
-          processedData.push(util.flattenData(item, null));
-        });
-
-        // Once you've retrieved your data and shaped it into the form expected,
-        // just call the registerData function.
-        alert('processed');
+      if (next) {
+        getData(next, getNextData);
+      } else {
         registerData(processedData);
       }
     });
   };
 
+  function getData (url, callback) {
+    $.ajax({
+      url: url,
+      headers: {
+        Authorization: 'token ' + tableau.password
+      },
+      success: function(data, textStatus, jqXHR) {
+        var link = jqXHR.getResponseHeader('link'),
+            next = getNextPage(link);
+
+        callback(data, next);
+      }
+    });
+  }
+
   // Private helper functions
   function createAPIUrl() {
     var data = JSON.parse(tableau.connectionData),
         query = data['query'],
-        url = "https://api/github.com";
-
-    alert(url + query);
+        url = "https://api.github.com";
 
     return url + query;
+  }
+
+  function getNextPage(link) {
+    var links = {};
+
+    if (!link || typeof link != "string") return false;
+
+    link.replace(/<([^>]*)>;\s*rel="([\w]*)\"/g, function(m, uri, type) {
+      links[type] = uri;
+    });
+
+    return links.next;
   }
 
 })(jQuery, tableau, wdcw);

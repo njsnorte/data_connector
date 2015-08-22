@@ -21,10 +21,14 @@ GitHubMeta.getComment = function() {
 GitHubMeta.getIssue = function() {
   return {
     "id": "int",
-    "url": "string",
-    "html_url": "string",
     "number": "int",
+    "url": "string",
+    "labels_url": "string",
+    "comments_url": "string",
+    "events_url": "string",
+    "html_url": "string",
     "state": "string",
+    "locked": "bool",
     "title": "string",
     "body": "string",
     "user": this.getUser(),

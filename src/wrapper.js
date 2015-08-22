@@ -210,7 +210,6 @@ var wdcw = window.wdcw || {};
 
       // If there was a password, set the password.
       if ($password) {
-        alert($password.val());
         tableau.password = $password.val();
       }
 
