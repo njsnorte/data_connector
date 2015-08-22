@@ -23,7 +23,7 @@ var wdcw = window.wdcw || {};
   wdcw.setup = function setup(phase, setUpComplete) {
     // You may need to perform set up or other initialization tasks at various
     // points in the data connector flow. You can do so here.
-    switch (phase) {
+     switch (phase) {
       case tableau.phaseEnum.interactivePhase:
         // Perform set up tasks that relate to when the user will be prompted to
         // enter information interactively.
@@ -79,33 +79,25 @@ var wdcw = window.wdcw || {};
    *   ]);
    */
   wdcw.columnHeaders = function columnHeaders(registerHeaders) {
-    // Make a request to the API using your API token like this:
-    $.ajax({
-      url: "https://api.example.com/path/to/your/metadata",
-      headers: {
-        // Note that the token is available on the "password" property of the
-        // global tableau object. The password is encrypted when stored.
-        Authorization: 'token ' + tableau.password
-      },
-      success: function columnHeadersRetrieved(response) {
-        var processedColumns = [],
-            propName;
+    var processedColumns,
+      data = JSON.parse(tableau.connectionData);
 
-        // If necessary, process the response from the API into the expected
-        // format (highlighted below):
-        for (propName in response.properties) {
-          if (response.properties.hasOwnProperty(propName)) {
-            processedColumns.push({
-              name: propName,
-              type: response.properties[propName].type
-            });
-          }
-        }
+    switch (data["dataType"]) {
+      case 'comment':
+        processedColumns = util.flattenHeaders(GitHubMeta.getComment(), null);
+        break;
+      case 'issue':
+        processedColumns = util.flattenHeaders(GitHubMeta.getIssue(), null);
+        break;
+      case 'pr':
+        processedColumns = util.flattenHeaders(GitHubMeta.getPullRequest(), null);
+        break;
+      default:
+        throw 'Unsupported data-type';
+    }
 
-        // Once data is retrieved and processed, call registerHeaders().
-        registerHeaders(processedColumns);
-      }
-    });
+    // Once data is retrieved and processed, call registerHeaders().
+    registerHeaders(processedColumns);
   };
 
   /**
@@ -122,38 +114,40 @@ var wdcw = window.wdcw || {};
    *   ]});
    */
   wdcw.tableData = function tableData(registerData) {
-    // Do the same to retrieve your actual data.
+    // Get the data.
     $.ajax({
-      url: "https://api.example.com/path/to/your/data",
+      url: createAPIUrl(),
       headers: {
         Authorization: 'token ' + tableau.password
       },
       success: function dataRetrieved(response) {
         var processedData = [];
 
+        alert(JSON.stringify(response, null, 3));
+
         // You may need to perform processing to shape the data into an array of
         // objects where each object is a map of column names to values.
-        response.entities.forEach(function shapeData(entity) {
-          processedData.push({
-            column1: entity.columnOneValue,
-            column2: entity.columnTwoValue
-          });
+        response.items.forEach(function shapeData(item) {
+          processedData.push(util.flattenData(item, null));
         });
 
         // Once you've retrieved your data and shaped it into the form expected,
         // just call the registerData function.
+        alert('processed');
         registerData(processedData);
       }
     });
   };
 
-  // You can write private methods for use above like this:
+  // Private helper functions
+  function createAPIUrl() {
+    var data = JSON.parse(tableau.connectionData),
+        query = data['query'],
+        url = "https://api/github.com";
 
-  /**
-   * Helper function to build an API endpoint.
-   */
-  function buildApiFrom(path) {
-    return 'https://api.example.com/' + path;
+    alert(url + query);
+
+    return url + query;
   }
 
 })(jQuery, tableau, wdcw);

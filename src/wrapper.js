@@ -161,6 +161,14 @@ var wdcw = window.wdcw || {};
    * - Trigger the data collection phase of the web data connector.
    */
   $(document).ready(function connectorDocumentReady() {
+    $('input[name=searchType]:radio, input[name=dataType]:radio').change(function() {
+      var searchType = 'get'/*$('input[name=searchType]:checked').val()*/,
+          dataType = $('input[name=dataType]:checked').val();
+
+      $('#help > div').hide();
+      $('#' + searchType + '-' + dataType).show();
+    });
+
     $('form').submit(function connectorFormSubmitHandler(e) {
       var $fields = $('input, select, textarea').not('[type="password"],[type="submit"],[name="username"]'),
           $password = $('input[type="password"]'),
@@ -171,11 +179,21 @@ var wdcw = window.wdcw || {};
 
       // Format connection data according to assumptions.
       $fields.map(function getValuesFromFields() {
-        var $this = $(this);
+        var $this = $(this),
             name = $this.attr('name');
-        if (name) {
-          data[name] = $this.val();
+
+        switch (name) {
+          case 'searchType':
+          case 'dataType':
+            if ($this.is(':checked')) {
+              data[name] = $this.val();
+            }
+            break;
+          default:
+            data[name] = $this.val();
+            break;
         }
+
         return this;
       });
 
@@ -186,11 +204,13 @@ var wdcw = window.wdcw || {};
       }
 
       // Set connection data and connection name.
+      wdcw.data = data;
       connector.setConnectionData(data);
       tableau.connectionName = 'github-data-connector';
 
       // If there was a password, set the password.
       if ($password) {
+        alert($password.val());
         tableau.password = $password.val();
       }
 

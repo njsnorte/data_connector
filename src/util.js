@@ -23,8 +23,8 @@ util.isArray = ('isArray' in Array) ?
  */
 util.flattenData = function (obj, prefix) {
   var result = {},
-    traverse = function(obj, prefix) {
-      var item, key;
+    traverse = function(obj, ancestor) {
+      var item, key, parent;
 
       for (key in obj) {
         if (!obj.hasOwnProperty(key)) continue;
@@ -32,22 +32,22 @@ util.flattenData = function (obj, prefix) {
         item = obj[key];
 
         if (typeof item === 'object') {
-          prefix += key + '.';
-          traverse(item, prefix);
+          parent = ancestor + key + '.';
+          traverse(item, parent);
 
           continue;
         }
 
         if (util.isArray(item)) {
           for (var i=0; i < item.length; i++) {
-            prefix += key + '.';
-            traverse(item[i], prefix);
+            parent = ancestor + key + '-';
+            traverse(item[i], parent);
           }
 
           continue;
         }
 
-        key = prefix + key;
+        key = prefix + ancestor + key;
         result[key] = item;
       }
     };
@@ -58,7 +58,7 @@ util.flattenData = function (obj, prefix) {
   }
 
   // Traverse over our (nested) object.
-  traverse(obj, prefix);
+  traverse(obj, '');
 
   return result;
 };
@@ -74,8 +74,11 @@ util.flattenData = function (obj, prefix) {
  */
 util.flattenHeaders = function (obj, prefix) {
   var result = [],
-    traverse = function(obj, prefix) {
-      var item, key;
+    traverse = function(obj, ancestor) {
+      var item, key, parent;
+
+      // Do not bother parsing empty objects.
+      if (obj === null) return;
 
       for (key in obj) {
         if (!obj.hasOwnProperty(key)) continue;
@@ -83,25 +86,25 @@ util.flattenHeaders = function (obj, prefix) {
         item = obj[key];
 
         if (typeof item === 'object') {
-          prefix += key + '.';
-          traverse(item, prefix, result);
+          parent = ancestor + key + '.';
+          traverse(item, parent);
 
           continue;
         }
 
         if (item.constructor === 'array') {
           for (var i=0; i < item.length; i++) {
-            prefix += key + '.';
-            traverse(item[i], prefix, result);
+            parent = ancestor + key + '-';
+            traverse(item[i], parent);
           }
 
           continue;
         }
 
-        key = prefix + key;
+        key = prefix + ancestor + key;
         result.push({
           'name': key,
-          'type': item,
+          'type': item
         });
       }
     };
@@ -112,7 +115,7 @@ util.flattenHeaders = function (obj, prefix) {
   }
 
   // Traverse over our (nested) object.
-  traverse(obj, prefix);
+  traverse(obj, '');
 
   return result;
 };
