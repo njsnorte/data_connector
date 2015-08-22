@@ -41,14 +41,14 @@ module.exports = function(grunt) {
         dest: 'build/all.min.js'
       }
     },
-    connect: {
+    /*connect: {
       server: {
         options: {
           base: './',
           port: 9001
         }
       }
-    },
+    },*/
     watch: {
       scripts: {
         files: 'src/**/*.js',
@@ -71,12 +71,12 @@ module.exports = function(grunt) {
     'jshint',
     'concat',
     'uglify',
-    'connect:server',
+    //'connect:server',
     'watch'
   ]);
 
   grunt.registerTask('run', [
-    'connect:server',
+    //'connect:server',
     'watch'
   ]);
 };
