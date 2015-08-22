@@ -2,7 +2,7 @@
   "name": "github-data-connector",
   "version": "0.0.0",
   "scripts": {
-    "postinstall": "grunt uglify",
+    "postinstall": "grunt",
     "start": "index.html"
   },
   "dependencies": {
