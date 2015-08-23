@@ -27,7 +27,14 @@ module.exports = function(grunt) {
           'src/wrapper.js',
           'src/**/*.js'
         ],
-        dest: 'build/all.js'
+        dest: 'build/js/all.js'
+      },
+      css: {
+        src: [
+          'bower_components/material-design-lite/material.css',
+          'bower_components/custom/custom.css',
+        ],
+        dest: 'build/css/style.css'
       }
     },
     uglify: {
@@ -37,24 +44,33 @@ module.exports = function(grunt) {
         sourceMap: true
       },
       target: {
-        src: 'build/all.js',
-        dest: 'build/all.min.js'
+        src: 'build/js/all.js',
+        dest: 'build/js/all.min.js'
       }
     },
-    /*connect: {
+    cssmin: {
+      target: {
+        files: [{
+          src: 'build/css/style.css',
+          dest: 'build/css/style.min.css',
+        }]
+      }
+    },
+    connect: {
       server: {
         options: {
           base: './',
           port: 9001
         }
       }
-    },*/
+    },
     watch: {
       scripts: {
-        files: 'src/**/*.js',
+        files: ['src/**/*.js', 'bower_components/custom/*.css'],
         tasks: [
           'jshint',
           'concat',
+          'cssmin',
           'uglify'
         ]
       }
@@ -63,6 +79,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -70,13 +87,20 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
     'jshint',
     'concat',
+    'cssmin',
     'uglify',
-    //'connect:server',
+    'connect:server',
     'watch'
   ]);
 
   grunt.registerTask('run', [
-    //'connect:server',
+    'connect:server',
     'watch'
+  ]);
+
+  grunt.registerTask('heroku', [
+    'concat',
+    'cssmin',
+    'uglify'
   ]);
 };
