@@ -22,8 +22,10 @@ module.exports = function(grunt) {
         },
         src: [
           'bower_components/jquery/dist/jquery.js',
+          'bower_components/lodash/lodash.js',
           'bower_components/tableau/dist/*.js',
           'bower_components/material-design-lite/material.js',
+          'src/util.js',
           'src/wrapper.js',
           'src/**/*.js'
         ],
@@ -32,7 +34,7 @@ module.exports = function(grunt) {
       css: {
         src: [
           'bower_components/material-design-lite/material.css',
-          'bower_components/custom/custom.css',
+          'bower_components/custom/custom.css'
         ],
         dest: 'build/css/style.css'
       }
@@ -52,7 +54,7 @@ module.exports = function(grunt) {
       target: {
         files: [{
           src: 'build/css/style.css',
-          dest: 'build/css/style.min.css',
+          dest: 'build/css/style.min.css'
         }]
       }
     },

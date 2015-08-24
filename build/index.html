@@ -16,20 +16,6 @@
                         </div>
                         <div class="mdl-grid mdl-color-text--grey-700">
                             <div class="search-options mdl-cell mdl-cell--6-col mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
-                                <h6>Connection information</h6>
-
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input class="mdl-textfield__input" type="password" name="password" id="password" />
-                                    <label class="mdl-textfield__label" for="password">API Token</label>
-                                </div>
-
-                                <h6>Settings</h6>
-                                <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
-                                    <input class="mdl-textfield__input" type="number" name="maxNumberOfRows" id="maxNumberOfRows" value="5000"/>
-                                    <label class="mdl-textfield__label" for="maxNumberOfRows">Maximum number of items to return.</label>
-                                </div>
-                            </div>
-                            <div class="search-options mdl-cell mdl-cell--6-col mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
                                 <h6>Data Type</h6>
                                 <ul>
                                     <li>
@@ -69,13 +55,31 @@
                                         </label>
                                 </ul>
                             </div>
+                            <div class="search-options mdl-cell mdl-cell--6-col mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
+                                <h6>Settings</h6>
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="password" name="password" id="password" />
+                                    <label class="mdl-textfield__label" for="password">API Token</label>
+                                </div>
+                                <div id="settings">
+                                    <div id="settings-labelFilter">
+                                        <label class="mdl-checkbox mdl-js-checkbox" for="labelFilter">
+                                            <input type="checkbox" id="labelFilter" class="mdl-checkbox__input" name="labelFilter" value=1 checked />
+                                            <span class="mdl-checkbox__label">Only include label names</span>
+                                        </label>
+                                    </div>
+                                    <div id="settings-maxNumberOfRows" class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
+                                        <input class="mdl-textfield__input" type="number" name="maxNumberOfRows" id="maxNumberOfRows" value="5000"/>
+                                        <label class="mdl-textfield__label" for="maxNumberOfRows">Maximum number of items to return.</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mdl-cell mdl-cell--12-col">
                                 <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
                                     <input class="mdl-textfield__input" type="text" name="query" id="query"/>
                                     <label class="mdl-textfield__label" for="query">Query</label>
                                 </div>
                                 <input type="submit" value="Get Data" class="mdl-button mdl-js-button mdl-button--colored mdl-button--raised mdl-js-ripple-effect" />
-
                             </div>
                         </div>
                         <div class="mdl-card__actions mdl-card--border">
@@ -97,6 +101,8 @@
                                         <pre><code>orgs/:org/issues</code></pre>
                                         <p>Get all issues in a repository:</p>
                                         <pre><code>repos/:owner/:repo/issues</code></pre>
+                                        <p>Get all issues in multiple repositories:</p>
+                                        <pre><code>repos/:owner/[:repo1,:repo2]/issues</code></pre>
                                         <p>Search for all open issues (not pr's).<em>This is across all the authenticated user’s visible repositories including owned repositories,
                                             member repositories, and organization repositories:</em>
                                         </p>

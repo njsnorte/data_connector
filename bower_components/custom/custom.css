@@ -26,3 +26,7 @@ pre code {
   padding: 0;
   list-style-type: none;
 }
+
+#settings > div {
+  margin-bottom: 5px;
+}

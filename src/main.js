@@ -125,10 +125,10 @@ var wdcw = window.wdcw || {};
   wdcw.tableData = function tableData(registerData) {
     var urls = createAPIUrl(),
         count = 0,
-        counter = 0;
-        maxNumberOfRows = getConnectionData('maxNumberOfRows'),
+        counter = 0,
+        connectionData = getConnectionData(),
+        maxNumberOfRows = connectionData['maxNumberOfRows'],
         processedData = [];
-
 
     urls.forEach(function apiCalls(url) {
       counter ++;
@@ -137,6 +137,10 @@ var wdcw = window.wdcw || {};
 
         // Process our data and add to the array of results.
         data.forEach(function shapeData(item) {
+          if (connectionData['dataType'] === 'issue' && _.has(connectionData, 'labelFilter') && util.isArray(item.labels)) {
+            item.labels = _.pluck(item.labels, 'name');
+          }
+
           processedData.push(util.flattenData(item));
         });
 
@@ -187,11 +191,25 @@ var wdcw = window.wdcw || {};
       headers: {
         Authorization: 'token ' + tableau.password
       },
-      success: function(data, textStatus, jqXHR) {
+      success: function(result, textStatus, jqXHR) {
         var link = jqXHR.getResponseHeader('link'),
             next = getNextPage(link);
 
+        // GET queries return an array of results.
+        if (util.isArray(result)) {
+          data = result;
+        }
+        // SEARCH queries return an object with an array of results in "items".
+        else if (typeof result === 'object' && util.isArray(result.items)) {
+          data = result.items;
+        } else {
+          throw 'Unexpected result set, please check your API call syntax.'
+        }
+
         callback(data, next);
+      },
+      error: function (jqXHR, textStatus, error) {
+        throw 'Invalid API call: ' + url + '\n Please check your syntax. Error:' + error;
       }
     });
   }
@@ -217,7 +235,7 @@ var wdcw = window.wdcw || {};
         urls.push(path + url);
       });
     } else {
-      urls.push(path);
+      urls.push(path + query);
     }
 
     return urls;

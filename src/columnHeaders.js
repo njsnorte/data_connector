@@ -32,7 +32,7 @@ GitHubMeta.getIssue = function() {
     "title": "string",
     "body": "string",
     "user": this.getUser(),
-    "labels": [this.getLabel()],
+    "labels": "string", /*We only care about the name (unique identifier) of the labels.*/
     "assignee": this.getUser(),
     "milestone": this.getMilestone(),
     "comments": "int",

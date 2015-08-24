@@ -13,6 +13,18 @@ util.isArray = ('isArray' in Array) ?
   };
 
 /**
+ * Create an array with a defined length of default values.
+ *
+ * @param {Object|string|number} value
+ * @param {number} length
+ * @returns {Array}
+ */
+Array.prototype.repeat= function(value, length){
+  while(length) this[--length]= value;
+  return this;
+};
+
+/**
  * Flattens our data into an object with unique property names.
  *
  * @param {object} obj
@@ -60,18 +72,14 @@ function flatten (obj, ancestor, callback) {
 
     item = obj[key];
 
-    if (typeof item === 'object') {
+    if (util.isArray(item)) {
+      // Arrays are a special case and should be handled within Tableau.
+      // We transform them back into JSON.
+      item = JSON.stringify(item);
+    }
+    else if (typeof item === 'object') {
       parent = ancestor + key + '.';
       flatten(item, parent, callback);
-
-      continue;
-    }
-
-    if (util.isArray(item)) {
-      for (var i=0; i < item.length; i++) {
-        parent = ancestor + key + '-';
-        flatten(item[i], parent, callback);
-      }
 
       continue;
     }

@@ -164,8 +164,20 @@ var wdcw = window.wdcw || {};
     $('input[name=searchType]:radio, input[name=dataType]:radio').change(function() {
       var dataType = $('input[name=dataType]:checked').val();
 
+      // Show examples
       $('#help > div').hide();
       $('#help-' + dataType).show();
+
+      // Data Type specific settings
+      $('#settings > div').hide();
+      $('#settings-maxNumberOfRows').show();
+      switch (dataType) {
+        case 'issue':
+          $('#settings-labelFilter').show();
+          break;
+        default:
+          break;
+      }
     });
 
     $('form').submit(function connectorFormSubmitHandler(e) {
