@@ -97,10 +97,4 @@ module.exports = function(grunt) {
     'connect:server',
     'watch'
   ]);
-
-  grunt.registerTask('heroku', [
-    'concat',
-    'cssmin',
-    'uglify'
-  ]);
 };

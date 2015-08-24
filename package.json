@@ -1,10 +1,6 @@
 {
   "name": "github-data-connector",
   "version": "0.0.0",
-  "scripts": {
-    "postinstall": "grunt heroku",
-    "start": "app.js"
-  },
   "dependencies": {
     "express": "^4.13.3",
     "grunt": "0.4.5",
