@@ -80,17 +80,26 @@ var wdcw = window.wdcw || {};
    */
   wdcw.columnHeaders = function columnHeaders(registerHeaders) {
     var processedColumns,
-      data = JSON.parse(tableau.connectionData);
+        dataType = getConnectionData('dataType');
 
-    switch (data["dataType"]) {
+    switch (dataType) {
       case 'comment':
-        processedColumns = util.flattenHeaders(GitHubMeta.getComment(), null);
+        processedColumns = util.flattenHeaders(GitHubMeta.getComment());
         break;
       case 'issue':
-        processedColumns = util.flattenHeaders(GitHubMeta.getIssue(), null);
+        processedColumns = util.flattenHeaders(GitHubMeta.getIssue());
+        break;
+      case 'label':
+        processedColumns = util.flattenHeaders(GitHubMeta.getLabel());
+        break;
+      case 'milestone':
+        processedColumns = util.flattenHeaders(GitHubMeta.getMilestone());
         break;
       case 'pr':
-        processedColumns = util.flattenHeaders(GitHubMeta.getPullRequest(), null);
+        processedColumns = util.flattenHeaders(GitHubMeta.getPullRequest());
+        break;
+      case 'repo':
+        processedColumns = util.flattenHeaders(GitHubMeta.getRepository());
         break;
       default:
         throw 'Unsupported data-type';
@@ -115,14 +124,19 @@ var wdcw = window.wdcw || {};
    */
   wdcw.tableData = function tableData(registerData) {
     var url = createAPIUrl(),
+        count = 0,
+        maxNumberOfRows = getConnectionData('maxNumberOfRows'),
         processedData = [];
 
     getData(url, function getNextData(data, next) {
+      count += data.length;
+
+      // Process our data and add to the array of results.
       data.forEach(function shapeData(item) {
-        processedData.push(util.flattenData(item, null));
+        processedData.push(util.flattenData(item));
       });
 
-      if (next) {
+      if (next && count < maxNumberOfRows) {
         getData(next, getNextData);
       } else {
         registerData(processedData);
@@ -130,6 +144,34 @@ var wdcw = window.wdcw || {};
     });
   };
 
+  // Private helper functions
+
+  /**
+   *  Get the connection data.
+   *  @param {string} property
+   *   (optional) value to return.
+   */
+  function getConnectionData(property) {
+    data = JSON.parse(tableau.connectionData);
+
+    if (property && typeof property === "string") {
+      return data[property];
+    }
+    else {
+      return data;
+    }
+  }
+
+  /**
+   * Ajax call to our API
+   *
+   * @param {string} url
+   *  The url used for our API call.
+   * @param {function(data, next)} callback
+   *  A callback function which takes two arguments:
+   *   data: result set from the API call.
+   *   next: A url to our next page (if any) or false if no next page was found.
+   */
   function getData (url, callback) {
     $.ajax({
       url: url,
@@ -145,15 +187,24 @@ var wdcw = window.wdcw || {};
     });
   }
 
-  // Private helper functions
+  /**
+   * Creates a url for our API calls.
+   */
   function createAPIUrl() {
-    var data = JSON.parse(tableau.connectionData),
-        query = data['query'],
-        url = "https://api.github.com";
+    var query = getConnectionData('query'),
+        url = "https://api.github.com/";
 
     return url + query;
   }
 
+  /**
+   * Gets a url to the next page of the result set.
+   *
+   * @param link
+   *  The meta data ['link'] from our response header.
+   * @returns {*}
+   *  The url to our next page, or false if no next page was found.
+   */
   function getNextPage(link) {
     var links = {};
 
