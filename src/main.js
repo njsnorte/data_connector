@@ -123,24 +123,26 @@ var wdcw = window.wdcw || {};
    *   ]});
    */
   wdcw.tableData = function tableData(registerData) {
-    var url = createAPIUrl(),
+    var urls = createAPIUrl(),
         count = 0,
         maxNumberOfRows = getConnectionData('maxNumberOfRows'),
         processedData = [];
 
-    getData(url, function getNextData(data, next) {
-      count += data.length;
+    urls.forEach(function(url) {
+      getData(url, function getNextData(data, next) {
+        count += data.length;
 
-      // Process our data and add to the array of results.
-      data.forEach(function shapeData(item) {
-        processedData.push(util.flattenData(item));
+        // Process our data and add to the array of results.
+        data.forEach(function shapeData(item) {
+          processedData.push(util.flattenData(item));
+        });
+
+        if (next && count < maxNumberOfRows) {
+          getData(next, getNextData);
+        } else {
+          registerData(processedData);
+        }
       });
-
-      if (next && count < maxNumberOfRows) {
-        getData(next, getNextData);
-      } else {
-        registerData(processedData);
-      }
     });
   };
 
@@ -188,13 +190,30 @@ var wdcw = window.wdcw || {};
   }
 
   /**
-   * Creates a url for our API calls.
+   * Creates an array of urls for our API calls.
    */
   function createAPIUrl() {
     var query = getConnectionData('query'),
-        url = "https://api.github.com/";
+        path = "https://api.github.com/",
+        repoRegex = /repos\/.*\/\[.*\]/g,
+        urls = [];
 
-    return url + query;
+    // Look for repository array
+    if (repoRegex.test(query)) {
+      var reg = /\[(.*)\]/g,
+          match = reg.exec(query)[1],
+          delimited = match.split(','),
+          url;
+
+      delimited.forEach(function (q) {
+        url = query.replace(reg, q);
+        urls.push(path + url);
+      });
+    } else {
+      urls.push(path);
+    }
+
+    return urls;
   }
 
   /**
