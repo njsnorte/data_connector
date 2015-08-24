@@ -125,10 +125,13 @@ var wdcw = window.wdcw || {};
   wdcw.tableData = function tableData(registerData) {
     var urls = createAPIUrl(),
         count = 0,
+        counter = 0;
         maxNumberOfRows = getConnectionData('maxNumberOfRows'),
         processedData = [];
 
-    urls.forEach(function(url) {
+
+    urls.forEach(function apiCalls(url) {
+      counter ++;
       getData(url, function getNextData(data, next) {
         count += data.length;
 
@@ -140,7 +143,11 @@ var wdcw = window.wdcw || {};
         if (next && count < maxNumberOfRows) {
           getData(next, getNextData);
         } else {
-          registerData(processedData);
+          counter --;
+
+          if (counter === 0) {
+            registerData(processedData);
+          }
         }
       });
     });
