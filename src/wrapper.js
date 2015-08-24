@@ -162,11 +162,10 @@ var wdcw = window.wdcw || {};
    */
   $(document).ready(function connectorDocumentReady() {
     $('input[name=searchType]:radio, input[name=dataType]:radio').change(function() {
-      var searchType = 'get'/*$('input[name=searchType]:checked').val()*/,
-          dataType = $('input[name=dataType]:checked').val();
+      var dataType = $('input[name=dataType]:checked').val();
 
       $('#help > div').hide();
-      $('#' + searchType + '-' + dataType).show();
+      $('#help-' + dataType).show();
     });
 
     $('form').submit(function connectorFormSubmitHandler(e) {

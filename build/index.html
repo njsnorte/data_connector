@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <title>github-data-connector</title>
-  <link rel="stylesheet" type="text/css" href="build/css/style.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/style.min.css"/>
 </head>
 <body>
 <div class="mdl-layout__container">
@@ -14,7 +14,7 @@
                         <div class="mdl-card__title mdl-card--expand mdl-color--blue-900 mdl-color-text--white">
                             <h2 class="mdl-card__title-text">GitHub Web Data Connector</h2>
                         </div>
-                        <div class="mdl-card__supporting-text mdl-color-text--grey-700">
+                        <div class="mdl-grid mdl-color-text--grey-700">
                             <div class="search-options mdl-cell mdl-cell--4-col">
                                 <h4>Connection information</h4>
 
@@ -22,22 +22,6 @@
                                 <input class="mdl-textfield__input" type="password" name="password" id="password" />
                                 <label class="mdl-textfield__label" for="password">API Token</label>
                                 </div>
-
-                                <!--<h4>Search Type</h4>
-                                <ul>
-                                    <li>
-                                        <label class="mdl-radio mdl-js-radio" for="type-get">
-                                            <input type="radio" id="type-get" class="mdl-radio__button" name="searchType" value="get" checked />
-                                            <span class="mdl-radio__label">Get</span>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label class="mdl-radio mdl-js-radio" for="type-search">
-                                            <input type="radio" id="type-search" class="mdl-radio__button" name="searchType" value="search" />
-                                            <span class="mdl-radio__label">Search</span>
-                                        </label>
-                                    </li>
-                                </ul>-->
 
                                 <h4>Data Type</h4>
                                 <ul>
@@ -54,12 +38,73 @@
                                         </label>
                                     </li>
                                     <li>
+                                        <label class="mdl-radio mdl-js-radio" for="data-type-labels">
+                                            <input type="radio" id="data-type-labels" class="mdl-radio__button" name="dataType" value="label" />
+                                            <span class="mdl-radio__label">Labels</span>
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label class="mdl-radio mdl-js-radio" for="data-type-milestones">
+                                            <input type="radio" id="data-type-milestones" class="mdl-radio__button" name="dataType" value="milestone" />
+                                            <span class="mdl-radio__label">Milestones</span>
+                                        </label>
+                                    </li>
+                                    <li>
                                         <label class="mdl-radio mdl-js-radio" for="data-type-pr">
                                             <input type="radio" id="data-type-pr" class="mdl-radio__button" name="dataType" value="pr" />
                                             <span class="mdl-radio__label">Pull Requests</span>
                                         </label>
                                     </li>
+                                    <li>
+                                    <label class="mdl-radio mdl-js-radio" for="data-type-repos">
+                                        <input type="radio" id="data-type-repos" class="mdl-radio__button" name="dataType" value="repo" />
+                                        <span class="mdl-radio__label">Repositories</span>
+                                    </label>
                                 </ul>
+                            </div>
+                            <div class="mdl-cell mdl-cell--8-col">
+                                <h4>Examples</h4>
+                                <div id ="help" class="body mdl-cell mdl-cell--12-col">
+                                    <div id="help-comment" style="display:none;">
+                                        <p>Get all comments on an issue:</p>
+                                        <pre><code>repos/:owner/:repo/issues/:number/comments</code></pre>
+                                        <p>Get all comments in a repository:</p>
+                                        <pre><code>repos/:owner/:repo/issues/comments</code></pre>
+                                    </div>
+                                    <div id="help-issue">
+                                        <p>Get all issues across all the authenticated user’s visible repositories including owned repositories, member repositories, and organization repositories:</p>
+                                        <pre><code>issues</code></pre>
+                                        <p>Get all issues across owned and member repositories for the authenticated user:</p>
+                                        <pre><code>user/issues</code></pre>
+                                        <p>Get all issues for a given organization for the authenticated user:</p>
+                                        <pre><code>orgs/:org/issues</code></pre>
+                                        <p>Search for all open issues (not pr's).<em>This is across all the authenticated user’s visible repositories including owned repositories,
+                                            member repositories, and organization repositories:</em>
+                                        </p>
+                                        <pre><code>search/issues?q=state:open+type:issue</code></pre>
+                                    </div>
+                                    <div id="help-label" style="display:none;">
+                                        <p>Get all labels in a repository:</p>
+                                        <pre><code>repos/:owner/:repo/labels</code></pre>
+                                    </div>
+                                    <div id="help-milestone" style="display:none;">
+                                        <p>Get all milestones in a repository:</p>
+                                        <pre><code>repos/:owner/:repo/milestones</code></pre>
+                                    </div>
+                                    <div id="help-pr" style="display:none;">
+                                        <p>Get all pull requests in a repository:</p>
+                                        <pre><code>repos/:owner/:repo/pulls</code></pre>
+                                    </div>
+                                    <div id="help-repo" style="display:none;">
+                                        <p>Get all public repositories:</p>
+                                        <pre><code>repositories</code></pre>
+                                        <p>Get all repositories that are accessible to the authenticated user:</p>
+                                        <pre><code>user/repos</code></pre>
+                                        <p>Get all repositories that belong to an organization:</p>
+                                        <pre><code>orgs/:org/repos</code></pre>
+                                    </div>
+                                    <em>More information can be found on <a href="https://developer.github.com/v3">Github</a>.</em>
+                                </div>
                             </div>
                             <div class="mdl-cell mdl-cell--12-col">
                                 <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
@@ -73,43 +118,11 @@
                         </div>
                     </form>
                 </div>
-
-                <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-                    <div class="mdl-card__title mdl-card--expand mdl-color--blue-900 mdl-color-text--white">
-                        <h2 class="mdl-card__title-text">Examples</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text mdl-color-text--grey-700">
-                        <div id ="help" class="body mdl-cell mdl-cell--12-col">
-                            <div id="get-comment" style="display:none;">
-                                <p>List all comments in a repository:</p>
-                                <pre><code>/repos/:owner/:repo/issues/comments</code></pre>
-                            </div>
-                            <div id="get-issue">
-                                <p>List all issues across all the authenticated user’s visible repositories including owned repositories, member repositories, and organization repositories:</p>
-                                <pre><code>/issues</code></pre>
-                                <p>List all issues across owned and member repositories for the authenticated user:</p>
-                                <pre><code>/user/issues</code></pre>
-                                <p>List all issues for a given organization for the authenticated user:</p>
-                                <pre><code>/orgs/:org/issues</code></pre>
-                            </div>
-                            <div id="get-pr" style="display:none;">
-                                <p>List all pull requests in a repository:</p>
-                                <pre><code>/repos/:owner/:repo/pulls</code></pre>
-                            </div>
-                            <div id="search-issue" style="display:none;">
-                                <p>Search for all open issues (not pr's).<em>This is across all the authenticated user’s visible repositories including owned repositories,
-                                    member repositories, and organization repositories.</em>
-                                </p>
-                                <pre><code>/search/issues?q=state:open+type:issue</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
 </div>
 
-<script src="build/js/all.min.js"></script>
+<script src="js/all.min.js"></script>
 </body>
 </html>
