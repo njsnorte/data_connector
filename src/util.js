@@ -13,109 +13,70 @@ util.isArray = ('isArray' in Array) ?
   };
 
 /**
- * Flattens an object and creates unique property names:
+ * Flattens our data into an object with unique property names.
  *
  * @param {object} obj
  *  The object that contains all the data.
- * @param {string} prefix
- *  Optional prefix to prepend to the column name.
  * @return {object} result
  */
-util.flattenData = function (obj, prefix) {
-  var result = {},
-    traverse = function(obj, ancestor) {
-      var item, key, parent;
+util.flattenData = function (obj) {
+  var result = {};
 
-      for (key in obj) {
-        if (!obj.hasOwnProperty(key)) continue;
-
-        item = obj[key];
-
-        if (typeof item === 'object') {
-          parent = ancestor + key + '.';
-          traverse(item, parent);
-
-          continue;
-        }
-
-        if (util.isArray(item)) {
-          for (var i=0; i < item.length; i++) {
-            parent = ancestor + key + '-';
-            traverse(item[i], parent);
-          }
-
-          continue;
-        }
-
-        key = prefix + ancestor + key;
-        result[key] = item;
-      }
-    };
-
-  // Ensure we have a valid prefix.
-  if (prefix == null || typeof(prefix) !== 'string') {
-    prefix = '';
-  }
-
-  // Traverse over our (nested) object.
-  traverse(obj, '');
+  // Flatten our (nested) object.
+  flatten(obj, '', function (key, item) {
+    result[key] = item;
+  });
 
   return result;
 };
 
 /**
- * Flattens our metadata to an associative array [{'name': 'Column_1', 'type': 'String'}]
+ * Flattens our metadata into an associative array [{'name': 'Column_1', 'type': 'String'}]
  *
  * @param {object} obj
  *  The object that contains all the metadata (name and type).
- * @param {string} prefix
- *  Optional prefix to prepend to the column name.
  * @return {Array} result
  */
-util.flattenHeaders = function (obj, prefix) {
-  var result = [],
-    traverse = function(obj, ancestor) {
-      var item, key, parent;
+util.flattenHeaders = function (obj) {
+  var result = [];
 
-      // Do not bother parsing empty objects.
-      if (obj === null) return;
-
-      for (key in obj) {
-        if (!obj.hasOwnProperty(key)) continue;
-
-        item = obj[key];
-
-        if (typeof item === 'object') {
-          parent = ancestor + key + '.';
-          traverse(item, parent);
-
-          continue;
-        }
-
-        if (item.constructor === 'array') {
-          for (var i=0; i < item.length; i++) {
-            parent = ancestor + key + '-';
-            traverse(item[i], parent);
-          }
-
-          continue;
-        }
-
-        key = prefix + ancestor + key;
-        result.push({
-          'name': key,
-          'type': item
-        });
-      }
-    };
-
-  // Ensure we have a valid prefix.
-  if (prefix == null || typeof(prefix) !== 'string') {
-    prefix = '';
-  }
-
-  // Traverse over our (nested) object.
-  traverse(obj, '');
+  // Flatten our (nested) object.
+  flatten(obj, '', function (key, item) {
+    result.push({
+      'name': key,
+      'type': item
+    });
+  });
 
   return result;
 };
+
+// Private helper methods.
+function flatten (obj, ancestor, callback) {
+  var item, key, parent;
+
+  for (key in obj) {
+    if (!obj.hasOwnProperty(key)) continue;
+
+    item = obj[key];
+
+    if (typeof item === 'object') {
+      parent = ancestor + key + '.';
+      flatten(item, parent, callback);
+
+      continue;
+    }
+
+    if (util.isArray(item)) {
+      for (var i=0; i < item.length; i++) {
+        parent = ancestor + key + '-';
+        flatten(item[i], parent, callback);
+      }
+
+      continue;
+    }
+
+    key = ancestor + key;
+    callback(key, item);
+  }
+}

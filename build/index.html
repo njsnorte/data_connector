@@ -12,18 +12,25 @@
                 <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
                     <form>
                         <div class="mdl-card__title mdl-card--expand mdl-color--blue-900 mdl-color-text--white">
-                            <h2 class="mdl-card__title-text">GitHub Web Data Connector</h2>
+                            <h4 class="mdl-card__title-text">GitHub Web Data Connector</h4>
                         </div>
                         <div class="mdl-grid mdl-color-text--grey-700">
-                            <div class="search-options mdl-cell mdl-cell--4-col">
-                                <h4>Connection information</h4>
+                            <div class="search-options mdl-cell mdl-cell--6-col mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
+                                <h6>Connection information</h6>
 
                                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input class="mdl-textfield__input" type="password" name="password" id="password" />
-                                <label class="mdl-textfield__label" for="password">API Token</label>
+                                    <input class="mdl-textfield__input" type="password" name="password" id="password" />
+                                    <label class="mdl-textfield__label" for="password">API Token</label>
                                 </div>
 
-                                <h4>Data Type</h4>
+                                <h6>Settings</h6>
+                                <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="number" name="maxNumberOfRows" id="maxNumberOfRows" value="5000"/>
+                                    <label class="mdl-textfield__label" for="maxNumberOfRows">Maximum number of items to return.</label>
+                                </div>
+                            </div>
+                            <div class="search-options mdl-cell mdl-cell--6-col mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
+                                <h6>Data Type</h6>
                                 <ul>
                                     <li>
                                         <label class="mdl-radio mdl-js-radio" for="data-type-comments">
@@ -56,15 +63,25 @@
                                         </label>
                                     </li>
                                     <li>
-                                    <label class="mdl-radio mdl-js-radio" for="data-type-repos">
-                                        <input type="radio" id="data-type-repos" class="mdl-radio__button" name="dataType" value="repo" />
-                                        <span class="mdl-radio__label">Repositories</span>
-                                    </label>
+                                        <label class="mdl-radio mdl-js-radio" for="data-type-repos">
+                                            <input type="radio" id="data-type-repos" class="mdl-radio__button" name="dataType" value="repo" />
+                                            <span class="mdl-radio__label">Repositories</span>
+                                        </label>
                                 </ul>
                             </div>
-                            <div class="mdl-cell mdl-cell--8-col">
+                            <div class="mdl-cell mdl-cell--12-col">
+                                <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="text" name="query" id="query"/>
+                                    <label class="mdl-textfield__label" for="query">Query</label>
+                                </div>
+                                <input type="submit" value="Get Data" class="mdl-button mdl-js-button mdl-button--colored mdl-button--raised mdl-js-ripple-effect" />
+
+                            </div>
+                        </div>
+                        <div class="mdl-card__actions mdl-card--border">
+                            <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-phone">
                                 <h4>Examples</h4>
-                                <div id ="help" class="body mdl-cell mdl-cell--12-col">
+                                <div id ="help">
                                     <div id="help-comment" style="display:none;">
                                         <p>Get all comments on an issue:</p>
                                         <pre><code>repos/:owner/:repo/issues/:number/comments</code></pre>
@@ -78,6 +95,8 @@
                                         <pre><code>user/issues</code></pre>
                                         <p>Get all issues for a given organization for the authenticated user:</p>
                                         <pre><code>orgs/:org/issues</code></pre>
+                                        <p>Get all issues in a repository:</p>
+                                        <pre><code>repos/:owner/:repo/issues</code></pre>
                                         <p>Search for all open issues (not pr's).<em>This is across all the authenticated user’s visible repositories including owned repositories,
                                             member repositories, and organization repositories:</em>
                                         </p>
@@ -106,15 +125,6 @@
                                     <em>More information can be found on <a href="https://developer.github.com/v3">Github</a>.</em>
                                 </div>
                             </div>
-                            <div class="mdl-cell mdl-cell--12-col">
-                                <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
-                                    <input class="mdl-textfield__input" type="text" name="query" id="query"/>
-                                    <label class="mdl-textfield__label" for="query">Query</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border">
-                            <input type="submit" value="Get Data" class="mdl-button mdl-js-button mdl-button--colored mdl-button--raised mdl-js-ripple-effect" />
                         </div>
                     </form>
                 </div>
