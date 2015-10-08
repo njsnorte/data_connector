@@ -128,12 +128,16 @@ var wdcw = window.wdcw || {};
         counter = 0,
         connectionData = getConnectionData(),
         maxNumberOfRows = connectionData['maxNumberOfRows'],
-        timeout = connectionData['timeout'] * 60000,//Get timeout in miliseconds.
+        timeout = connectionData['timeout'] * 60000,
         processedData = [];
 
     urls.forEach(function apiCalls(url) {
+      var start_time = new Date().getTime();
       counter ++;
+
       getData(url, timeout, function getNextData(data, next) {
+        var request_time = new Date().getTime() - start_time;
+        timeout -= request_time;
         count += data.length;
 
         // Process our data and add to the array of results.
@@ -145,7 +149,8 @@ var wdcw = window.wdcw || {};
           processedData.push(util.flattenData(item));
         });
 
-        if (next && count < maxNumberOfRows) {
+        if (next && count < maxNumberOfRows && timeout > 0) {
+          start_time = new Date().getTime();
           getData(next, timeout, getNextData);
         } else {
           counter --;
