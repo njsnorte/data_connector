@@ -171,6 +171,7 @@ var wdcw = window.wdcw || {};
       // Data Type specific settings
       $('#settings > div').hide();
       $('#settings-maxNumberOfRows').show();
+      $('#settings-timeout').show();
       switch (dataType) {
         case 'issue':
           $('#settings-labelFilter').show();

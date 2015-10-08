@@ -102,7 +102,7 @@ var wdcw = window.wdcw || {};
         processedColumns = util.flattenHeaders(GitHubMeta.getRepository());
         break;
       default:
-        throw 'Unsupported data-type';
+        tableau.abortWithError('Unsupported data-type');
     }
 
     // Once data is retrieved and processed, call registerHeaders().
@@ -128,11 +128,12 @@ var wdcw = window.wdcw || {};
         counter = 0,
         connectionData = getConnectionData(),
         maxNumberOfRows = connectionData['maxNumberOfRows'],
+        timeout = connectionData['timeout'] * 60000,//Get timeout in miliseconds.
         processedData = [];
 
     urls.forEach(function apiCalls(url) {
       counter ++;
-      getData(url, function getNextData(data, next) {
+      getData(url, timeout, function getNextData(data, next) {
         count += data.length;
 
         // Process our data and add to the array of results.
@@ -145,7 +146,7 @@ var wdcw = window.wdcw || {};
         });
 
         if (next && count < maxNumberOfRows) {
-          getData(next, getNextData);
+          getData(next, timeout, getNextData);
         } else {
           counter --;
 
@@ -185,12 +186,13 @@ var wdcw = window.wdcw || {};
    *   data: result set from the API call.
    *   next: A url to our next page (if any) or false if no next page was found.
    */
-  function getData (url, callback) {
+  function getData (url, timeout, callback) {
     $.ajax({
       url: url,
       headers: {
         Authorization: 'token ' + tableau.password
       },
+      timeout: timeout,
       success: function(result, textStatus, jqXHR) {
         var link = jqXHR.getResponseHeader('link'),
             next = getNextPage(link);
@@ -203,13 +205,18 @@ var wdcw = window.wdcw || {};
         else if (typeof result === 'object' && util.isArray(result.items)) {
           data = result.items;
         } else {
-          throw 'Unexpected result set, please check your API call syntax.'
+          tableau.abortWithError('Unexpected result set, please check your API call syntax.');
         }
 
         callback(data, next);
       },
       error: function (jqXHR, textStatus, error) {
-        throw 'Invalid API call: ' + url + '\n Please check your syntax. Error:' + error;
+        if (textStatus === 'timeout') {
+          tableau.abortWithError('API call timed out on the following query: ' + url + '.');
+        }
+        else {
+          tableau.abortWithError('Invalid API call: ' + url + '. \n Please check your syntax. Error:' + error);
+        }
       }
     });
   }
