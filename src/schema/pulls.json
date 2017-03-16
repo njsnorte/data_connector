@@ -1,0 +1,10 @@
+{
+  "alias": "pull requests",
+  "id": "pulls",
+  "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "description": "The identifier for this pull request.", "foreignKey": { "tableId": "comments", "columnId": "pr_id"}},
+    { "id": "body", "alias": "body", "dataType": "string", "description": "The body of this pull request." },
+    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this pull request was updated.", "incrementalRefresh": true },
+    { "id": "comments", "alias": "comments", "dataType": "int", "description": "The number of comments on this pull request" }
+  ]
+}

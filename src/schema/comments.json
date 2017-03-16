@@ -1,0 +1,13 @@
+{
+  "alias": "comments",
+  "id": "comments",
+  "joinOnly": true,
+  "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "description": "The identifier for this comment." },
+    { "id": "title", "alias": "title", "dataType": "string", "description": "The title for this comment." },
+    { "id": "body", "alias": "body", "dataType": "string", "description": "The body of this comment." },
+    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this comment was updated.", "incrementalRefresh": true },
+    { "id": "issue_id", "alias": "issue_id", "dataType": "int", "description": "The issue this comment belongs to." },
+    { "id": "pr_id", "alias": "[r_id", "dataType": "int", "description": "The pull request this comment belongs to." }
+  ]
+}
