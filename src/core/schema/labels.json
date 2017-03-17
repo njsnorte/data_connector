@@ -1,0 +1,8 @@
+{
+  "alias": "labels",
+  "id": "labels",
+  "joinOnly": true,
+  "columns": [
+    { "id": "name", "alias": "name", "dataType": "string", "description": "The name of this label." }
+  ]
+}

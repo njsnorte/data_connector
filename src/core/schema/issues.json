@@ -1,0 +1,10 @@
+{
+  "alias": "issues",
+  "id": "issues",
+  "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "description": "The identifier for this issue.", "foreignKey": { "tableId": "comments", "columnId": "parent_id"}},
+    { "id": "body", "alias": "body", "dataType": "string", "description": "The body of this issue." },
+    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this issue was updated." },
+    { "id": "comments", "alias": "comments", "dataType": "int", "description": "The number of comments on this issue" }
+  ]
+}

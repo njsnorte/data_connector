@@ -5,6 +5,6 @@
     { "id": "id", "alias": "id", "dataType": "int", "description": "The identifier for this repository." },
     { "id": "name", "alias": "name", "dataType": "string", "description": "The name for this repository." },
     { "id": "description", "alias": "description", "dataType": "string", "description": "The description for this repository." },
-    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this repository was updated.", "incrementalRefresh": true }
+    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this repository was updated." }
   ]
 }

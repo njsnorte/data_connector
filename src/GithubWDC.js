@@ -1,7 +1,8 @@
 "use strict";
 
-import Github from './Github';
+import Github from './core/Github';
 import Zenhub from './plugins/zenhub/Zenhub';
+import _ from 'lodash';
 
 /**
  * Wrapper around the Tableau WDC for using the Github API.
@@ -9,15 +10,30 @@ import Zenhub from './plugins/zenhub/Zenhub';
 class GithubWDC {
 
   constructor() {
-    // Cache the data from the API call(s).
     this._cache = {};
+    this._ghApi = {};
+    this._gh = {};
+    this._zhApi = {};
+    this._requestType = null;
     this._preFetched = false;
   }
 
+  /**
+   * Implements Tableau WDC init().
+   *
+   * @param {function} [cb]
+   *  Callback function.
+   */
   init(cb) {
     cb();
   }
 
+  /**
+   * Returns the authentication for Github.
+   *
+   * @returns {{username: *, password: *, token: *}}
+   * @private
+   */
   _getAuthentication() {
     return {
       username: tableau.username,
@@ -26,10 +42,18 @@ class GithubWDC {
     };
   }
 
+  /**
+   * Return the connection data, or a specific property from, of the Tableau
+   * WDC connection data.
+   *
+   * @param {string} [prop]
+   *  Optional property name to retrieve the value for.
+   * @private
+   */
   _getConnectionData(prop = null) {
     const connectionData = JSON.parse(tableau.connectionData);
 
-    if (prop && connectionData.hasOwnProperty(prop)) {
+    if (prop && _.has(connectionData, prop)) {
       return connectionData[prop];
     }
     else {
@@ -37,55 +61,101 @@ class GithubWDC {
     }
   }
 
+  /**
+   * Implements Tableau WDC getSchema().
+   *
+   * @param {function}[cb]
+   *  Callback function.
+   */
   getSchema(cb) {
-    let type = this._getConnectionData('dataType');
+    this._requestType = this._getConnectionData('dataType');
 
-    // Add schema objects to array of promises.
-    Promise.all(Github.getSchema(type)).then(cb);
-  }
+    // Initialize our Github API.
+    this._ghApi = new Github(this._getAuthentication());
 
-  _preFetchData() {
-    const gh = new Github(this._getAuthentication()),
-      query = this._getConnectionData('query'),
-      urls = parseQuery(query);
-    let promises = [],
-      raw = [];
-
-    for(const url of urls) {
-      promises.push(gh.request(url));
+    switch (this._requestType) {
+      case Github.ISSUE:
+        this._gh = this._ghApi.getIssues();
+        break;
+      case Github.PULL_REQUEST:
+        this._gh = this._ghApi.getPulls();
+        break;
     }
 
-    Promise.all(promises).then((result) => {
-      raw = raw.concat(...result);
-    });
-
-    // Add our raw results to the cache.
-    this._cache['raw'] = raw;
+    // Add schema objects to array of promises.
+    Promise.all(this._gh.getSchema()).then(cb);
   }
 
+  /**
+   * Runs the main API request given the query and caches its results.
+   *
+   * @returns {Promise}
+   * @private
+   */
+  _preFetch() {
+    return new Promise((resolve, reject) => {
+      // Don't run the query multiple times.
+      if (this._preFetched) {
+        resolve();
+      }
+
+      const query = this._getConnectionData('query'),
+        urls = parseQuery(query);
+      let promises = [],
+        raw = [];
+
+      for(const url of urls) {
+        promises.push(this._gh.request(url));
+      }
+
+      return Promise.all(promises).then((result) => {
+        raw = raw.concat(...result);
+
+        this._gh.processData(raw).then((processedData) => {
+          // Cache our processed data.
+          this._cache = processedData;
+
+          // Set our flag to true to ensure we don't run this twice.
+          this._preFetched = true;
+
+          resolve();
+        });
+      });
+    });
+  }
+
+  /**
+   * Implements Tableau WDC getData().
+   *
+   * @param table
+   * @param {function} [cb]
+   *  Callback function.
+   */
   getData(table, cb) {
     const tableId = table.tableInfo.id;
 
-    // Only perform the initial API request once!
-    if (!this._preFetched) {
-      this._preFetchData();
-    }
+    this._preFetch().then(() => {
+      // Make additional API calls for comments and epics.
+      if (tableId === 'comments') {
+        const issueIds = _.map(this._cache[tableId], 'comments_url');
+        console.log(issueIds);
+      }
+      else {
+        return Promise.resolve(this._cache[tableId]);
+      }
+    }).then((tableData) => {
+      // Append the data to the table and hand it back to Tableau.
+      table.appendRows(tableData);
 
-    // Post-process data.
-    let processedData = this.processData(table);
-
-    // Store our parsed results.
-    this._data[tableId] = processedData;
-
-    // Append the data to the table and hand it back to Tableau.
-    table.appendRows(processedData);
-    cb();
+      cb();
+    });
   }
 
-  _processData(table, data) {
-    return data;
-  }
-
+  /**
+   * Implements Tableau WDC shutdown().
+   *
+   * @param cb
+   */
   shutdown(cb) {
     cb();
   }
