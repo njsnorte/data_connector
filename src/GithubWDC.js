@@ -84,7 +84,6 @@ class GithubWDC {
 
     // Add schema objects to array of promises.
     this._gh.getSchema().then((schema) => {
-      console.log(schema['joins']);
       cb(schema['tables'], schema['joins']);
     });
   }

@@ -81,7 +81,9 @@ class Issues extends GithubObject {
         // Assignees
         if (_.has(obj, 'assignees') && obj.assignees.length > 0) {
           _.forEach(obj.assignees, (assignee) => {
-            processedData['users'][assignee.id] = assignee;
+            if(!_.find(processedData.users, {id: assignee.id})) {
+              processedData['users'].push(assignee);
+            }
 
             processedData['assignees'].push({
               'parent_id': obj.id,
@@ -101,11 +103,13 @@ class Issues extends GithubObject {
         // Labels
         if (_.has(obj, 'labels') && obj.labels.length > 0) {
           _.forEach(obj.labels, (label) => {
-            processedData['labels'][label.name] = label;
+            if(!_.find(processedData.labels, {id: label.id})) {
+              processedData['labels'].push(label);
+            }
 
             processedData['assigned_labels'].push({
               'parent_id': obj.id,
-              'label': label.name,
+              'label': label.id,
             });
           });
         }
@@ -115,14 +119,19 @@ class Issues extends GithubObject {
           let milestone_id = obj.milestone.id;
           obj.milestone_id = milestone_id;
 
-          processedData['milestones'][milestone_id] = obj.milestone;
+          if(!_.find(processedData.milestones, {id: milestone_id})) {
+            processedData['milestones'].push(obj.milestone);
+          }
         }
 
         // User
         if (_.has(obj, 'user') && obj.user) {
           let user_id = obj.user.id;
           obj.user_id = user_id;
-          processedData['users'][user_id] = obj.user;
+
+          if(!_.find(processedData.users, {id: user_id})) {
+            processedData['users'].push(obj.user);
+          }
         }
       });
 

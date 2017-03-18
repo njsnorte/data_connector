@@ -2,6 +2,7 @@
   "alias": "labels",
   "id": "labels",
   "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "description": "The id of this label." },
     { "id": "name", "alias": "name", "dataType": "string", "description": "The name of this label." }
   ]
 }
