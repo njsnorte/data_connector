@@ -1,0 +1,9 @@
+{
+  "alias": "assigned_labels",
+  "id": "assigned_labels",
+  "joinOnly": true,
+  "columns": [
+    { "id": "parent_id", "alias": "parent_id", "dataType": "int", "description": "The object this label belongs to (Issue or PR)." },
+    { "id": "label", "alias": "label", "dataType": "string", "description": "The name of this label." }
+  ]
+}

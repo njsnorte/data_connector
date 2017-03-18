@@ -1,0 +1,23 @@
+[
+  {
+    "alias": "Issues - Comments",
+    "tables": [{
+      "id": "issues",
+      "alias": "issues"
+    }, {
+      "id": "comments",
+      "alias": "comments"
+    }],
+    "joins": [{
+      "left": {
+        "tableAlias": "issues",
+        "columnId": "id"
+      },
+      "right": {
+        "tableAlias": "comments",
+        "columnId": "parent_id"
+      },
+      "joinType": "inner"
+    }]
+  }
+]

@@ -1,7 +1,6 @@
 {
   "alias": "comments",
   "id": "comments",
-  "joinOnly": true,
   "columns": [
     { "id": "id", "alias": "id", "dataType": "int", "description": "The identifier for this comment." },
     { "id": "title", "alias": "title", "dataType": "string", "description": "The title for this comment." },

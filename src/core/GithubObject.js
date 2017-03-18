@@ -76,11 +76,8 @@ class GithubObject {
   /**
    * Returns the relevant Github schema objects for a given type.
    *
-   * @param {string} type
-   *  The object type of the Github request.
-   *
-   * @return {Array}
-   *  Array of schema promises.
+   * @return {Promise}
+   *  Promise of schema object.
    */
   getSchema() {
     throw new Error('You have to implement this abstract method!');

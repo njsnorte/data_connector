@@ -26,15 +26,33 @@ class Issues extends GithubObject {
   /**
    * Returns the relevant Github schema objects for issues.
    *
-   * @return {Array}
-   *  Array of schema promises.
+   * @return {Promise}
+   *  Promise of schema object.
    */
-   getSchema() {
-    return [
-      Promise.resolve($.getJSON('/build/assets/schema/issues.json')),
-      Promise.resolve($.getJSON('/build/assets/schema/comments.json')),
-      Promise.resolve($.getJSON('/build/assets/schema/labels.json'))
-    ];
+  getSchema() {
+    let schema = {
+      'tables': [],
+      'joins': [],
+    };
+
+    return new Promise((resolve, reject) => {
+      const tablePromises = [
+        Promise.resolve($.getJSON('/build/assets/schema/issues.json')),
+        Promise.resolve($.getJSON('/build/assets/schema/comments.json')),
+        Promise.resolve($.getJSON('/build/assets/schema/labels.json')),
+        Promise.resolve($.getJSON('/build/assets/schema/assigned_labels.json'))],
+        joinPromises = Promise.resolve($.getJSON('/build/assets/schema/_joins.json'));
+
+      Promise.all(tablePromises).then((tables) => {
+        schema.tables = tables;
+
+        return joinPromises;
+      }).then((joins) => {
+        schema.joins = joins;
+
+        resolve(schema);
+      });
+    });
   }
 
   /**
