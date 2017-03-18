@@ -29,7 +29,7 @@ class Issues extends GithubObject {
    * @return {Array}
    *  Array of schema promises.
    */
-  static getSchema() {
+   getSchema() {
     return [
       Promise.resolve($.getJSON('/build/assets/schema/issues.json')),
       Promise.resolve($.getJSON('/build/assets/schema/comments.json')),
@@ -51,7 +51,8 @@ class Issues extends GithubObject {
       'assigned_labels': [],
       'assignees': [],
       'comments': [],
-      'issues': [],
+      'issues': data,
+      'labels': [],
       'milestones': [],
       'users': [],
     };
@@ -113,7 +114,7 @@ class Issues extends GithubObject {
 
 }
 
-module.exports = Issues;
+export default Issues;
 
 
 // Private helper functions.

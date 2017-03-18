@@ -141,6 +141,7 @@ class GithubWDC {
         console.log(issueIds);
       }
       else {
+        console.log(this._cache);
         return Promise.resolve(this._cache[tableId]);
       }
     }).then((tableData) => {

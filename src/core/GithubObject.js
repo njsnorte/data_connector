@@ -82,7 +82,7 @@ class GithubObject {
    * @return {Array}
    *  Array of schema promises.
    */
-  static getSchema() {
+  getSchema() {
     throw new Error('You have to implement this abstract method!');
   }
 
@@ -157,7 +157,7 @@ class GithubObject {
   }
 }
 
-module.exports = GithubObject;
+export default GithubObject;
 
 
 // Private helper functions.

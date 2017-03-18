@@ -37,8 +37,9 @@ class Github {
    *  The Promise for the rate limit request.
    */
   getRateLimit() {
-    const url = this._base + 'rate_limit';
-    return GithubObject.request(url);
+    const api = new GithubObject(this._auth, this._base),
+      url = this._base + 'rate_limit';
+    return api.request(url);
   }
 
   /**
@@ -61,7 +62,6 @@ class Github {
 
 }
 
-module.exports = Github;
-
+export default Github;
 
 // Private helper functions.

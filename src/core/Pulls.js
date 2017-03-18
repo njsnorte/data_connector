@@ -29,7 +29,7 @@ class Pulls extends GithubObject {
    * @return {Array}
    *  Array of schema promises.
    */
-  static getSchema() {
+   getSchema() {
     return [
       Promise.resolve($.getJSON('/build/assets/schema/pulls.json')),
       Promise.resolve($.getJSON('/build/assets/schema/comments.json')),
@@ -52,7 +52,7 @@ class Pulls extends GithubObject {
 
 }
 
-module.exports = Pulls;
+export default Pulls;
 
 
 // Private helper functions.
