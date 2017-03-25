@@ -84,20 +84,6 @@ class GithubObject {
   }
 
   /**
-   * Process our data into a format that is more Tableau friendly.
-   * Isolate nested objects and arrays and store them in separate 'tables'.
-   *
-   * @param {Array} data
-   *  An array of objects to process.
-   * @returns {*}
-   */
-  processData(data) {
-    console.log('Running from super class, implementation optional.');
-
-    return data;
-  }
-
-  /**
    * Make a request and fetch all available data (support pagination).
    *
    * @param {string} [url]
@@ -115,36 +101,36 @@ class GithubObject {
       url: url,
       method: 'GET',
       headers: this._getRequestHeaders(),
-      params: this._getRequestOptions(options),
+      qs: this._getRequestOptions(options),
       responseType: 'json',
       resolveWithFullResponse: true,
       json: true,
     };
 
     return req(config).then((response) => {
-      let data;
-
       if (response.body instanceof Array) {
         // Default GET Github API requests.
-        data = response.body;
+        results.push(...response.body);
+      }
+      else if (response.body instanceof Object) {
+        // Default single GET Github API requests.
+        results.push(response.body);
       }
       else if (response.body.items instanceof Array) {
         // Support SEARCH Github API requests.
         // @link https://developer.github.com/v3/search/
-        data = response.body.items;
+        results.push(...response.body.items);
       }
       else {
-        // Reject.
         log('reject');
       }
 
-      // Push our data onto the results.
-      results.push(...data);
-
       // Support Github pagination.
-      const nextPage = getNextPage(response.headers.link);
-      if (nextPage) {
-        return this.request(nextPage, options, results);
+      if (response.headers.link) {
+        const nextPage = getNextPage(response.headers.link);
+        if (nextPage) {
+          return this.request(nextPage, options, results);
+        }
       }
 
       return results;

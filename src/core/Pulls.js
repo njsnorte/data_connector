@@ -56,19 +56,6 @@ class Pulls extends GithubObject {
     });
   }
 
-  /**
-   * Process our pull requests into a format that is more Tableau friendly.
-   * Isolate nested objects and arrays (e.g. user, assignees, labels and milestone)
-   * and store them in separate 'tables'.
-   *
-   * @param {array} data
-   *  An array of issues to process.
-   * @returns {*}
-   */
-  processData(data) {
-    return data;
-  }
-
 }
 
 export default Pulls;

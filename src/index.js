@@ -1,5 +1,6 @@
 "use strict";
 
+import 'babel-polyfill';
 import GithubWDC from './GithubWDC';
 
 const wdc = new GithubWDC();
@@ -31,7 +32,7 @@ tableau.registerConnector(wdc);
       let $fields = $('input, select, textarea').not('[type="password"],[type="submit"],[name="username"]'),
         $password = $('input[type="password"]'),
         $username = $('input[name="username"]'),
-        data = {};
+        data = {options:{}};
 
       e.preventDefault();
 
@@ -41,7 +42,11 @@ tableau.registerConnector(wdc);
           name = $this.attr('name');
 
         switch (name) {
-          case 'searchType':
+          case 'includeClosed':
+            if ($this.is(':checked')) {
+              data.options.state = 'all';
+            }
+            break;
           case 'dataType':
             if ($this.is(':checked')) {
               data[name] = $this.val();
@@ -54,12 +59,6 @@ tableau.registerConnector(wdc);
 
         return this;
       });
-
-      // If nothing was entered, there was a problem. Abort.
-      // @todo Automatically add validation handling.
-      if (data === {}) {
-        return false;
-      }
 
       // Initiate the data retrieval process.
       tableau.connectionName = "Github WDC";
