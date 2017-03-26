@@ -12,14 +12,25 @@
     "type": "git",
     "url": "https://github.com/tableau-mkt/github-data-connector.git"
   },
+  "engines": {
+    "node": "0.12.x"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "postinstall": "gulp build"
+  },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
+    "cookie-parser": "^1.4.3",
     "debug": "^2.6.3",
     "es6-promise-pool": "^2.4.4",
+    "express": "^4.15.2",
     "jquery": "^3.1.1",
     "js-base64": "^2.1.9",
     "lodash": "^4.17.4",
-    "request-promise": "^4.1.1"
+    "node-env-file": "^0.1.8",
+    "request-promise": "^4.1.1",
+    "uglifyify": "^3.0.4"
   },
   "devDependencies": {
     "babel-core": "^6.24.0",
@@ -39,6 +50,7 @@
     "gulp-cli": "^1.2.2",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.0.0",
+    "gulp-express": "^0.3.5",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.4.1",
     "gulp-tap": "^0.1.3",

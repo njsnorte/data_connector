@@ -49,7 +49,7 @@
         "tableAlias": "users",
         "columnId": "id"
       },
-      "joinType": "inner"
+      "joinType": "left"
     }, {
       "left": {
         "tableAlias": "issues",
@@ -69,7 +69,7 @@
         "tableAlias": "users",
         "columnId": "id"
       },
-      "joinType": "inner"
+      "joinType": "left"
     }, {
       "left": {
         "tableAlias": "assigned_labels",
@@ -79,7 +79,7 @@
         "tableAlias": "labels",
         "columnId": "id"
       },
-      "joinType": "inner"
+      "joinType": "left"
     }]
   },
   {
@@ -129,7 +129,7 @@
         "tableAlias": "users",
         "columnId": "id"
       },
-      "joinType": "inner"
+      "joinType": "left"
     }, {
       "left": {
         "tableAlias": "assigned_labels",
@@ -139,7 +139,7 @@
         "tableAlias": "labels",
         "columnId": "id"
       },
-      "joinType": "inner"
+      "joinType": "left"
     }]
   }
 ]

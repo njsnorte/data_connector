@@ -1,6 +1,6 @@
 "use strict";
 
-import Github from './core/Github';
+import Github from './components/Github';
 import PromisePool from 'es6-promise-pool';
 import _ from 'lodash';
 
@@ -20,7 +20,6 @@ class GithubWDC {
     };
     this._ghApi = {};
     this._gh = {};
-    this._zhApi = {};
     this._requestType = null;
     this._preFetched = false;
   }
@@ -32,6 +31,37 @@ class GithubWDC {
    *  Callback function.
    */
   init(cb) {
+    const accessToken = Cookies.get("accessToken"),
+      isAuthenticated = (accessToken && accessToken.length > 0) || tableau.password.length > 0;
+
+    // Set the authentication method to custom.
+    tableau.authType = tableau.authTypeEnum.custom;
+
+    switch (tableau.phase) {
+      case tableau.phaseEnum.auth:
+        if (isAuthenticated) {
+          tableau.password = accessToken;
+          tableau.submit()
+        }
+        else {
+          // Modify UI.
+          updateUI(false);
+        }
+        break;
+      case tableau.phaseEnum.gatherDataPhase:
+        // If API that WDC is using has an enpoint that checks
+        // the validity of an access token, that could be used here.
+        // Then the WDC can call tableau.abortForAuth if that access token
+        // is invalid.
+        break;
+      case tableau.phaseEnum.interactivePhase:
+        if (isAuthenticated) {
+          tableau.password = accessToken;
+          tableau.submit()
+        }
+        break;
+    }
+
     cb();
   }
 
@@ -144,7 +174,7 @@ class GithubWDC {
 
           // The actual API request for a given url.
           return new Promise((resolve, reject) => {
-            this._gh.request(url, this._getConnectionData('options')).then((result) => {
+            this._gh.request(url).then((result) => {
               raw = raw.concat(...result);
 
               resolve(raw);

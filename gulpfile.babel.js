@@ -2,56 +2,50 @@
 
 import gulp from 'gulp';
 import rename from 'gulp-rename';
-import source from 'vinyl-source-stream';
+import server from 'gulp-express';
 import rimraf from 'rimraf';
 import browserify from 'browserify';
+import uglifyify from 'uglifyify';
 import glob from 'glob';
-import es from 'event-stream';
-import connect from 'gulp-connect';
+import source from 'vinyl-source-stream';
 
 gulp.task('clean', (cb) => {
   rimraf('./build', cb);
 });
 
-gulp.task('build:js', (cb) => {
-  glob('src/**/*.js', function(err, files) {
-    if(err) cb(err);
-
-    let tasks = files.map(function(entry) {
-      return browserify({ entries: [entry] })
-        .transform("babelify", {presets: ["es2015"]})
-        .bundle()
-        .pipe(source(entry))
-        .pipe(rename({dirname: ''}))
-        .pipe(gulp.dest('./build/assets/js'));
-    });
-    es.merge(tasks).on('end', cb);
-  })
+gulp.task('build:js:github', () => {
+  let files = glob.sync('./src/github/**/*.js');
+  return browserify({entries: files})
+    .transform("babelify", {presets: ["es2015"]})
+    .transform('uglifyify')
+    .bundle()
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest('./build/github'));
 });
 
-gulp.task('build:schema', () => {
+gulp.task('build:schema:github', () => {
   return gulp.src('src/**/*.json')
     .pipe(rename({dirname: ''}))
-    .pipe(gulp.dest('./build/assets/schema'));
+    .pipe(gulp.dest('./build/github/schema'));
 });
 
-gulp.task('build', gulp.parallel('build:js', 'build:schema'));
-
-gulp.task('connect:server', () => {
-  return connect.server({
-    root: '.',
-    port: '9001',
-    livereload: true
-  });
+gulp.task('build:html:github', () => {
+  return gulp.src('src/**/*.html')
+    .pipe(rename({dirname: ''}))
+    .pipe(gulp.dest('./build/github'));
 });
 
-gulp.task('connect:reload', () => {
-  return gulp.src('./index.html')
-    .pipe(connect.reload());
+gulp.task('build:github', gulp.parallel('build:js:github', 'build:schema:github', 'build:html:github'));
+
+gulp.task('build', gulp.parallel('build:github'));
+
+gulp.task('connect:server', function () {
+  server.run(['app.js']);
+
+  // Restart the server on file changes.
+  gulp.watch(['src/github/index.html'], server.notify);
+  gulp.watch(['src/**/*.js'], gulp.series('build', server.run));
+  gulp.watch(['app.js'], server.run);
 });
 
-gulp.task('watch', () => {
-  return gulp.watch(['./src/*.js', './src/**/*.js'], gulp.series('build', 'connect:reload'));
-});
-
-gulp.task('default', gulp.series('clean', 'build', gulp.parallel('connect:server', 'watch')));
+gulp.task('default', gulp.series('clean', 'build', 'connect:server'));
