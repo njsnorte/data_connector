@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "postinstall": "node node_modules/gulp/bin/gulp -v"
+    "postinstall": "node node_modules/gulp/bin/gulp build"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
