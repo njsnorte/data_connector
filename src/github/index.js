@@ -1,6 +1,6 @@
 "use strict";
 
-import 'babel-polyfill';
+//import 'babel-polyfill';
 import GithubWDC from './GithubWDC';
 
 const wdc = new GithubWDC();
@@ -8,8 +8,8 @@ tableau.registerConnector(wdc);
 
 (function ($) {
   $(document).ready(function () {
-    let accessToken = Cookies.get("accessToken"),
-     isAuthenticated = (accessToken !== 'undefined' && accessToken.length > 0);
+    let accessToken = Cookies.get("accessToken") || false,
+     isAuthenticated = accessToken && accessToken !== 'undefined' && accessToken.length > 0;
 
     // Update the UI to reflect the authentication status.
     updateUI(isAuthenticated);
@@ -29,7 +29,7 @@ tableau.registerConnector(wdc);
     });
 
     $('form').submit(function connectorFormSubmitHandler(e) {
-      let $fields = $('input, select, textarea').not('[type="password"],[type="submit"],[name="username"]'),
+      let $fields = $('input, select, textarea').not('[type="submit"]'),
         data = {};
 
       e.preventDefault();
