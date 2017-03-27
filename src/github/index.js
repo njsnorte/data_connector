@@ -1,6 +1,6 @@
 "use strict";
 
-import 'babel-polyfill';
+//import 'babel-polyfill';
 import GithubWDC from './GithubWDC';
 
 const wdc = new GithubWDC();

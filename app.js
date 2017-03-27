@@ -56,8 +56,6 @@ app.get('/github/login/oauth/redirect', function(req, res) {
   request(config).then(function(response) {
     var accessToken = response.body.access_token;
 
-    console.log(response);
-
     // Set the token in cookies so the client can access it
     res.cookie('accessToken', accessToken, { });
 
