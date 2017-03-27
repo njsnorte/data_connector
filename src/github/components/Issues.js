@@ -43,7 +43,7 @@ class Issues extends GithubObject {
         Promise.resolve($.getJSON('/github/schema/assignees.json')),
         Promise.resolve($.getJSON('/github/schema/labels.json')),
         Promise.resolve($.getJSON('/github/schema/assigned_labels.json'))],
-        joinPromises = Promise.resolve($.getJSON('/github/schema/_joins.json'));
+        joinPromises = Promise.resolve($.getJSON('/github/schema/issues_joins.json'));
 
       Promise.all(tablePromises).then((tables) => {
         schema.tables = tables;
