@@ -24,18 +24,30 @@ gulp.task('build:js:github', () => {
 });
 
 gulp.task('build:schema:github', () => {
-  return gulp.src('src/**/*.json')
+  return gulp.src('src/github/**/*.json')
     .pipe(rename({dirname: ''}))
     .pipe(gulp.dest('./build/github/schema'));
 });
 
-gulp.task('build:html:github', () => {
-  return gulp.src('src/**/*.html')
+gulp.task('build:assets:github', () => {
+  return gulp.src('src/github/assets/**/*')
+    .pipe(rename({dirname: ''}))
+    .pipe(gulp.dest('./build/github/assets'));
+});
+
+gulp.task('build:css:github', () => {
+  return gulp.src('src/github/**/*.css')
     .pipe(rename({dirname: ''}))
     .pipe(gulp.dest('./build/github'));
 });
 
-gulp.task('build:github', gulp.parallel('build:js:github', 'build:schema:github', 'build:html:github'));
+gulp.task('build:html:github', () => {
+  return gulp.src('src/github/**/*.html')
+    .pipe(rename({dirname: ''}))
+    .pipe(gulp.dest('./build/github'));
+});
+
+gulp.task('build:github', gulp.parallel('build:js:github', 'build:schema:github', 'build:css:github', 'build:assets:github', 'build:html:github'));
 
 gulp.task('build', gulp.parallel('build:github'));
 

@@ -39,11 +39,11 @@
     }, {
       "left": {
         "tableAlias": "issues",
-        "columnId": "id"
+        "columnId": "user_id"
       },
       "right": {
         "tableAlias": "issue_creators",
-        "columnId": "user_id"
+        "columnId": "id"
       },
       "joinType": "left"
     }, {
