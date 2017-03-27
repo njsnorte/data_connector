@@ -8,8 +8,8 @@ tableau.registerConnector(wdc);
 
 (function ($) {
   $(document).ready(function () {
-    let accessToken = Cookies.get("accessToken"),
-     isAuthenticated = (accessToken !== 'undefined' && accessToken.length > 0);
+    let accessToken = Cookies.get("accessToken") || false,
+     isAuthenticated = accessToken && accessToken !== 'undefined' && accessToken.length > 0;
 
     // Update the UI to reflect the authentication status.
     updateUI(isAuthenticated);
