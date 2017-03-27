@@ -115,9 +115,9 @@ class GithubWDC {
    * @returns {Promise}
    * @private
    */
-  _preFetch() {
+  _query() {
     // Don't run the query multiple times.
-    if (this._preFetched) {
+    if (this._queryExecuted) {
       return Promise.resolve(false);
     }
     else {
@@ -125,9 +125,9 @@ class GithubWDC {
         urls = parseQuery(query);
 
       // Set our flag to true to ensure we don't run this twice.
-      this._preFetched = true;
+      this._queryExecuted = true;
 
-      return this._getData(urls, 5);
+      return this._request(urls, 5);
     }
   }
 
@@ -142,7 +142,7 @@ class GithubWDC {
    * @returns {Promise}
    * @private
    */
-  _getData(urls, concurrency = 3) {
+  _request(urls, concurrency = 3) {
     return new Promise((resolve, reject) => {
       let count = 0,
         producer,
@@ -171,10 +171,12 @@ class GithubWDC {
       };
 
       // Run our promises concurrently, but never exceeds the maximum number of
-      // concurrent promises (i.e. concurrency).
+      // concurrent promises.
       pool = new PromisePool(producer, concurrency);
       pool.start().then(() => {
         resolve(raw);
+      }, (err) => {
+        tableau.log(err);
       });
     });
   }
@@ -272,7 +274,7 @@ class GithubWDC {
   getData(table, cb) {
     const tableId = table.tableInfo.id;
 
-    this._preFetch().then((rawData) => {
+    this._query().then((rawData) => {
       if (rawData) {
         return this._processData(tableId, rawData);
       }
@@ -284,6 +286,8 @@ class GithubWDC {
       table.appendRows(tableData);
 
       cb();
+    }).catch((err) => {
+      tableau.abortWithError(err);
     });
   }
 
