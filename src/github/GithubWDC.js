@@ -10,14 +10,7 @@ import _ from 'lodash';
 class GithubWDC {
 
   constructor() {
-    this._cache = {
-      'assigned_labels': [],
-      'assignees': [],
-      'issues': [],
-      'labels': [],
-      'milestones': [],
-      'users': [],
-    };
+    this._cache = {};
     this._ghApi = {};
     this._gh = {};
     this._requestType = null;
@@ -118,7 +111,7 @@ class GithubWDC {
   _query() {
     // Don't run the query multiple times.
     if (this._queryExecuted) {
-      return Promise.resolve(false);
+      return Promise.resolve();
     }
     else {
       const query = this._getConnectionData('query'),
@@ -159,6 +152,7 @@ class GithubWDC {
           // The actual API request for a given url.
           return new Promise((resolve, reject) => {
             this._gh.request(url).then((result) => {
+              // Append all our raw data.
               raw = raw.concat(...result);
 
               resolve(raw);
@@ -182,89 +176,6 @@ class GithubWDC {
   }
 
   /**
-   * Process our issues into a format that is more Tableau friendly.
-   * Isolate nested objects and arrays (e.g. user, assignees, labels and milestone)
-   * and store them in separate 'tables'.
-   *
-   * @param {string} [tableId]
-   *  The table id for which we are parsing the data.
-   * @param {Array} [data]
-   *  An array of issues to process.
-   * @returns {Promise}
-   */
-  _processData(tableId, data) {
-    return new Promise((resolve, reject) => {
-      // Isolate objects and arrays to make joins easier in Tableau.
-      _.forEach(data, (obj) => {
-        // Assignees.
-        if (_.has(obj, 'assignees') && obj.assignees.length > 0) {
-          _.forEach(obj.assignees, (assignee) => {
-            if(!_.find(this._cache.users, {id: assignee.id})) {
-              this._cache['users'].push(assignee);
-            }
-
-            this._cache['assignees'].push({
-              'parent_id': obj.id,
-              'user_id': assignee.id,
-            });
-          });
-        }
-
-        // Labels.
-        if (_.has(obj, 'labels') && obj.labels.length > 0) {
-          _.forEach(obj.labels, (label) => {
-            if(!_.find(this._cache.labels, {id: label.id})) {
-              this._cache['labels'].push(label);
-            }
-
-            this._cache['assigned_labels'].push({
-              'parent_id': obj.id,
-              'label_id': label.id,
-            });
-          });
-        }
-
-        // Milestones.
-        if (_.has(obj, 'milestone') && obj.milestone) {
-          let milestone = obj.milestone;
-          obj.milestone_id = milestone.id;
-
-          // Handle milestone creators.
-          if (_.has(milestone, 'creator') && milestone.creator) {
-            let user = milestone.creator;
-            milestone.user_id = user.id;
-
-            if(!_.find(this._cache.users, {id: milestone.user_id})) {
-              this._cache['users'].push(user);
-            }
-          }
-
-          if(!_.find(this._cache.milestones, {id: milestone.id})) {
-            this._cache['milestones'].push(milestone);
-          }
-        }
-
-        // Users.
-        if (_.has(obj, 'user') && obj.user) {
-          let user = obj.user;
-          obj.user_id = user.id;
-
-          if(!_.find(this._cache.users, {id: user.id})) {
-            this._cache['users'].push(user);
-          }
-        }
-
-        // Main obj.
-        if(!_.find(this._cache[tableId], {id: obj.id})) {
-          this._cache[tableId].push(obj);
-        }
-      });
-
-      resolve(this._cache[tableId]);
-    });
-  }
-
-  /**
    * Implements Tableau WDC getData().
    *
    * @param table
@@ -276,7 +187,7 @@ class GithubWDC {
 
     this._query().then((rawData) => {
       if (rawData) {
-        return this._processData(tableId, rawData);
+        return this._gh.processData(rawData);
       }
       else {
         return this._cache[tableId];

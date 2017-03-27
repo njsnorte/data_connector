@@ -138,6 +138,19 @@ class GithubObject {
       log(err);
     });
   }
+
+  /**
+   * Process our objects into a format that is more Tableau friendly.
+   * Isolate nested objects and arrays and store them in separate 'tables'.
+   *
+   * @param {Array} [data]
+   *  An array of objects to process.
+   * @returns {Promise}
+   */
+  processData(data) {
+    return data;
+  }
+
 }
 
 export default GithubObject;
