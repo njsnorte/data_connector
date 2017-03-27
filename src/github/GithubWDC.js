@@ -37,32 +37,16 @@ class GithubWDC {
     // Set the authentication method to custom.
     tableau.authType = tableau.authTypeEnum.custom;
 
+    cb();
+
     switch (tableau.phase) {
-      case tableau.phaseEnum.auth:
-        if (isAuthenticated) {
-          tableau.password = accessToken;
-          tableau.submit()
-        }
-        else {
-          // Modify UI.
-          updateUI(false);
-        }
-        break;
-      case tableau.phaseEnum.gatherDataPhase:
-        // If API that WDC is using has an enpoint that checks
-        // the validity of an access token, that could be used here.
-        // Then the WDC can call tableau.abortForAuth if that access token
-        // is invalid.
-        break;
+      case tableau.phaseEnum.authPhase:
       case tableau.phaseEnum.interactivePhase:
         if (isAuthenticated) {
           tableau.password = accessToken;
-          tableau.submit()
         }
         break;
     }
-
-    cb();
   }
 
   /**
