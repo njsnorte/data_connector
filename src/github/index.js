@@ -65,13 +65,13 @@ tableau.registerConnector(wdc);
   }
 
   function updateUI(isAuthenticated) {
-    /*if (isAuthenticated) {
+    if (isAuthenticated) {
       $(".anonymous").hide();
       $(".authenticated").show();
     } else {
       $(".anonymous").show();
       $(".authenticated").hide();
-    }*/
+    }
   }
 
 })(jQuery);
