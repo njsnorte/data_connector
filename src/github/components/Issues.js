@@ -37,13 +37,13 @@ class Issues extends GithubObject {
 
     return new Promise((resolve, reject) => {
       const tablePromises = [
-        Promise.resolve($.getJSON('/build/assets/schema/issues.json')),
-        Promise.resolve($.getJSON('/build/assets/schema/users.json')),
-        Promise.resolve($.getJSON('/build/assets/schema/milestones.json')),
-        Promise.resolve($.getJSON('/build/assets/schema/assignees.json')),
-        Promise.resolve($.getJSON('/build/assets/schema/labels.json')),
-        Promise.resolve($.getJSON('/build/assets/schema/assigned_labels.json'))],
-        joinPromises = Promise.resolve($.getJSON('/build/assets/schema/_joins.json'));
+        Promise.resolve($.getJSON('/github/schema/issues.json')),
+        Promise.resolve($.getJSON('/github/schema/users.json')),
+        Promise.resolve($.getJSON('/github/schema/milestones.json')),
+        Promise.resolve($.getJSON('/github/schema/assignees.json')),
+        Promise.resolve($.getJSON('/github/schema/labels.json')),
+        Promise.resolve($.getJSON('/github/schema/assigned_labels.json'))],
+        joinPromises = Promise.resolve($.getJSON('/github/schema/_joins.json'));
 
       Promise.all(tablePromises).then((tables) => {
         schema.tables = tables;

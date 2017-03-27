@@ -37,11 +37,11 @@ class Pulls extends GithubObject {
 
     return new Promise((resolve, reject) => {
       const tablePromises = [
-          Promise.resolve($.getJSON('/build/assets/schema/pulls.json')),
-          Promise.resolve($.getJSON('/build/assets/schema/comments.json')),
-          Promise.resolve($.getJSON('/build/assets/schema/labels.json'))],
+          Promise.resolve($.getJSON('/github/schema/pulls.json')),
+          Promise.resolve($.getJSON('/github/schema/assigned_labels.json')),
+          Promise.resolve($.getJSON('/github/schema/labels.json'))],
         joinPromises = [
-          Promise.resolve($.getJSON('/build/assets/schema/_joins.json')),
+          Promise.resolve($.getJSON('/github/schema/_joins.json')),
         ];
 
       Promise.all(tablePromises).then((tables) => {
