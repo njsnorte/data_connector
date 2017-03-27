@@ -37,14 +37,14 @@ class GithubWDC {
     // Set the authentication method to custom.
     tableau.authType = tableau.authTypeEnum.custom;
 
-    // Modify UI.
-    updateUI(isAuthenticated);
-
     cb();
 
+    console.log('now what');
+
     switch (tableau.phase) {
-      case tableau.phaseEnum.auth:
+      case tableau.phaseEnum.authPhase:
         if (isAuthenticated) {
+          console.log('set password');
           tableau.password = accessToken;
 
           // Auto-submit.

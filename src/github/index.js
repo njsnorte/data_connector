@@ -29,7 +29,7 @@ tableau.registerConnector(wdc);
     });
 
     $('form').submit(function connectorFormSubmitHandler(e) {
-      let $fields = $('input, select, textarea').not('[type="password"],[type="submit"],[name="username"]'),
+      let $fields = $('input, select, textarea').not('[type="submit"]'),
         data = {};
 
       e.preventDefault();
