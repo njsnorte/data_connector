@@ -13,11 +13,11 @@
     "url": "https://github.com/tableau-mkt/github-data-connector.git"
   },
   "engines": {
-    "node": "0.12.x"
+    "node": "4.4.5"
   },
   "scripts": {
     "start": "node app.js",
-    "postinstall": "gulp build"
+    "postinstall": "node node_modules/gulp/bin/gulp build"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
@@ -25,7 +25,6 @@
     "debug": "^2.6.3",
     "es6-promise-pool": "^2.4.4",
     "express": "^4.15.2",
-    "gulp": "^3.9.1",
     "jquery": "^3.1.1",
     "js-base64": "^2.1.9",
     "lodash": "^4.17.4",
