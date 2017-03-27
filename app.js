@@ -40,8 +40,8 @@ app.get('/github/login/oauth', function(req, res) {
 app.get('/github/login/oauth/redirect', function(req, res) {
   var code = req.query.code,
     options = {
-      client_id: process.env.GITHUB_CLIENT_ID,
-      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
+      client_secret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
       code: code
     },
     config = {
@@ -53,7 +53,7 @@ app.get('/github/login/oauth/redirect', function(req, res) {
       json: true
     };
 
-  req(config).then(function(response) {
+  request(config).then(function(response) {
     var accessToken = response.body.access_token;
 
     // Set the token in cookies so the client can access it
