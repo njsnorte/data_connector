@@ -17,6 +17,14 @@ class GithubWDC {
     this._preFetched = false;
   }
 
+  get cache() {
+    return this._cache;
+  }
+
+  set cache(cache) {
+    this._cache = cache;
+  }
+
   /**
    * Implements Tableau WDC init().
    *
@@ -24,8 +32,9 @@ class GithubWDC {
    *  Callback function.
    */
   init(cb) {
-    const accessToken = Cookies.get("accessToken"),
-      isAuthenticated = (accessToken && accessToken.length > 0) || tableau.password.length > 0;
+    let accessToken = Cookies.get("accessToken") || false,
+      isAuthenticated = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
+        tableau.password.length > 0;
 
     // Set the authentication method to custom.
     tableau.authType = tableau.authTypeEnum.custom;
@@ -187,18 +196,20 @@ class GithubWDC {
 
     this._query().then((rawData) => {
       if (rawData) {
-        return this._gh.processData(rawData);
+        // Process the actual raw data.
+        this._gh.processData(rawData).then((processedData) => {
+          // Save our processed data.
+          this.cache = processedData;
+        });
       }
-      else {
-        return this._cache[tableId];
-      }
-    }).then((tableData) => {
+    }).catch((err) => {
+      tableau.abortWithError(err);
+    }).then(() => {
+      let tableData = this.cache[tableId];
       // Append the data to the table and hand it back to Tableau.
       table.appendRows(tableData);
 
       cb();
-    }).catch((err) => {
-      tableau.abortWithError(err);
     });
   }
 
