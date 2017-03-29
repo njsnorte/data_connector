@@ -80,7 +80,7 @@ tableau.registerConnector(wdc);
       if (_.has(data, name)) {
         switch (type) {
           case 'radio':
-            $field.check();
+            $field.is(':checked');
             break;
           default:
             $field.val(data[name]);
