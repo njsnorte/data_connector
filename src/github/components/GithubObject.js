@@ -136,6 +136,7 @@ class GithubObject {
       return results;
     }).catch(function (err) {
       log(err);
+      throw err;
     });
   }
 

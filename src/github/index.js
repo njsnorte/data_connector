@@ -9,22 +9,16 @@ tableau.registerConnector(wdc);
 
 (function ($) {
   $(document).ready(function () {
-    const accessToken = Cookies.get("accessToken") || false,
-      isAuthenticated = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
-        tableau.password.length > 0,
-      $inputFields = $('input, select, textarea').not('[type="submit"]');
-
-    // Update the UI to reflect the authentication status.
-    updateUI(isAuthenticated);
+    const $inputFields = $('input, select, textarea').not('[type="submit"]');
 
     // Set default values (base on connection data).
     setFieldsFromValues($inputFields, wdc.getConnectionData());
 
-    // Handle Github OAuth.
+    // Handles Github OAuth.
     $("#authenticate").click(oAuthRedirect);
 
-    //
-    $('input[name=searchType]:radio, input[name=dataType]:radio').change(function() {
+    // Handles data-type examples.
+    $('input[name=dataType]:radio').change(function() {
       const dataType = $('input[name=dataType]:checked').val();
 
       // Show examples
@@ -47,19 +41,12 @@ tableau.registerConnector(wdc);
   });
 
   /**
-   * Perform Github OAuth,
-   */
-  function oAuthRedirect() {
-    window.location.href = '/github/login/oauth';
-  }
-
-  /**
    * Update the UI depending on whether the user has authenticated.
    *
    * @param {bool}[isAuthenticated]
    *  TRUE if the user is authenticated, FALSE otherwise.
    */
-  function updateUI(isAuthenticated) {
+  $(document).on('updateUI', function (e, isAuthenticated) {
     if (isAuthenticated) {
       $(".anonymous").hide();
       $(".authenticated").show();
@@ -67,6 +54,13 @@ tableau.registerConnector(wdc);
       $(".anonymous").show();
       $(".authenticated").hide();
     }
+  });
+
+  /**
+   * Perform Github OAuth,
+   */
+  function oAuthRedirect() {
+    window.location.href = '/github/login/oauth';
   }
 
   /**
@@ -84,7 +78,14 @@ tableau.registerConnector(wdc);
         type = $field.attr('type');
 
       if (_.has(data, name)) {
-        $field.val(data[name]);
+        switch (type) {
+          case 'radio':
+            $field.is(':checked');
+            break;
+          default:
+            $field.val(data[name]);
+            break;
+        }
       }
     });
   }
@@ -99,9 +100,19 @@ tableau.registerConnector(wdc);
 
     $fields.each(function (index, value) {
       const $field = $(this),
-        name = $field.attr('name');
+        name = $field.attr('name'),
+        type = $field.attr('type');
 
-      data[name] = $field.val();
+      switch (type) {
+        case 'radio':
+          if ($field.is(':checked')) {
+            data[name] = $field.val();
+          }
+          break;
+        default:
+          data[name] = $field.val();
+          break;
+      }
     });
 
     return data;
