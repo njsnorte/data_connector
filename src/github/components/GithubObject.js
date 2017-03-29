@@ -46,7 +46,7 @@ class GithubObject {
    *  The headers to pass to the request.
    */
   _getRequestHeaders() {
-    let headers = {
+    const headers = {
       'Content-Type': 'application/json;charset=UTF-8',
       'Accept': 'application/vnd.github.v3+json',
     };
@@ -167,7 +167,7 @@ export default GithubObject;
  *  The url to our next page, or undefined if no next page was found.
  */
 function getNextPage(link) {
-  let links = {};
+  const links = {};
 
   link.replace(/<([^>]*)>;\s*rel="([\w]*)\"/g, function(m, uri, type) {
     links[type] = uri;

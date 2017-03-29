@@ -32,7 +32,7 @@ class GithubWDC {
    *  Callback function.
    */
   init(cb) {
-    let accessToken = Cookies.get("accessToken") || false,
+    const accessToken = Cookies.get("accessToken") || false,
       isAuthenticated = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
         tableau.password.length > 0;
 
@@ -43,6 +43,12 @@ class GithubWDC {
 
     switch (tableau.phase) {
       case tableau.phaseEnum.authPhase:
+        if (isAuthenticated) {
+          tableau.password = accessToken;
+          // Auto-submit.
+          tableau.submit();
+        }
+        break;
       case tableau.phaseEnum.interactivePhase:
         if (isAuthenticated) {
           tableau.password = accessToken;
@@ -71,10 +77,9 @@ class GithubWDC {
    *
    * @param {string} [prop]
    *  Optional property name to retrieve the value for.
-   * @private
    */
-  _getConnectionData(prop = null) {
-    const connectionData = JSON.parse(tableau.connectionData);
+  getConnectionData(prop = null) {
+    const connectionData = JSON.parse(tableau.connectionData || "{}");
 
     if (prop && _.has(connectionData, prop)) {
       return connectionData[prop];
@@ -91,7 +96,7 @@ class GithubWDC {
    *  Callback function.
    */
   getSchema(cb) {
-    this._requestType = this._getConnectionData('dataType');
+    this._requestType = this.getConnectionData('dataType');
 
     // Initialize our Github API.
     this._ghApi = new Github(this._getAuthentication());
@@ -123,7 +128,7 @@ class GithubWDC {
       return Promise.resolve();
     }
     else {
-      const query = this._getConnectionData('query'),
+      const query = this.getConnectionData('query'),
         urls = parseQuery(query);
 
       // Set our flag to true to ensure we don't run this twice.
@@ -205,7 +210,7 @@ class GithubWDC {
     }).catch((err) => {
       tableau.abortWithError(err);
     }).then(() => {
-      let tableData = this.cache[tableId];
+      const tableData = this.cache[tableId];
       // Append the data to the table and hand it back to Tableau.
       table.appendRows(tableData);
 
@@ -240,7 +245,7 @@ function parseQuery(query) {
   const base = 'https://api.github.com/',
     re = /\[(.*)\]/g,
     match = re.exec(query);
-  let urls = [];
+  const urls = [];
 
   // Look for any arrays in our query string.
   if (match !== null) {

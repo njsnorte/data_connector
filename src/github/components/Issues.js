@@ -30,7 +30,7 @@ class Issues extends GithubObject {
    *  Promise of schema object.
    */
   getSchema() {
-    let schema = {
+    const schema = {
       'tables': [],
       'joins': [],
     };
@@ -67,7 +67,7 @@ class Issues extends GithubObject {
    * @returns {Promise}
    */
   processData(data) {
-    let processedData = {
+    const processedData = {
       'assigned_labels': [],
       'assignees': [],
       'issues': [],
@@ -109,12 +109,12 @@ class Issues extends GithubObject {
 
         // Milestones.
         if (_.has(obj, 'milestone') && obj.milestone) {
-          let milestone = obj.milestone;
+          const milestone = obj.milestone;
           obj.milestone_id = milestone.id;
 
           // Handle milestone creators.
           if (_.has(milestone, 'creator') && milestone.creator) {
-            let user = milestone.creator;
+            const user = milestone.creator;
             milestone.user_id = user.id;
 
             if(!_.find(processedData.users, {id: milestone.user_id})) {
@@ -129,7 +129,7 @@ class Issues extends GithubObject {
 
         // Users.
         if (_.has(obj, 'user') && obj.user) {
-          let user = obj.user;
+          const user = obj.user;
           obj.user_id = user.id;
 
           if(!_.find(processedData.users, {id: user.id})) {
@@ -143,7 +143,7 @@ class Issues extends GithubObject {
           if (_.has(obj, 'repository_url')) {
             obj.repo_name = obj.repository_url
               .substr(obj.repository_url
-              .lastIndexOf('/'));
+              .lastIndexOf('/') + 1);
           }
 
           // Distinguish issues from pull requests.
