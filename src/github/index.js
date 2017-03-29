@@ -1,6 +1,7 @@
 "use strict";
 
 //import 'babel-polyfill';
+import _ from 'lodash';
 import GithubWDC from './GithubWDC';
 
 const wdc = new GithubWDC();
@@ -8,50 +9,34 @@ tableau.registerConnector(wdc);
 
 (function ($) {
   $(document).ready(function () {
-    let accessToken = Cookies.get("accessToken") || false,
-     isAuthenticated = accessToken && accessToken !== 'undefined' && accessToken.length > 0;
+    const accessToken = Cookies.get("accessToken") || false,
+      isAuthenticated = accessToken && accessToken !== 'undefined' && accessToken.length > 0,
+      $inputFields = $('input, select, textarea').not('[type="submit"]');
 
     // Update the UI to reflect the authentication status.
-    updateUI(isAuthenticated);
+    updateUI(true);
+
+    // Set default values (base on connection data).
+    setFieldsFromValues($inputFields, wdc.getConnectionData());
 
     // Handle Github OAuth.
-    $("#authenticate").click(function() {
-      oAuthRedirect();
-    });
+    $("#authenticate").click(oAuthRedirect);
 
-
+    //
     $('input[name=searchType]:radio, input[name=dataType]:radio').change(function() {
-      let dataType = $('input[name=dataType]:checked').val();
+      const dataType = $('input[name=dataType]:checked').val();
 
       // Show examples
       $('#help > div').hide();
       $('#help-' + dataType).show();
     });
 
+    // Handles WDC submission.
     $('form').submit(function connectorFormSubmitHandler(e) {
-      let $fields = $('input, select, textarea').not('[type="submit"]'),
-        data = {};
-
       e.preventDefault();
 
-      // Format connection data according to assumptions.
-      $fields.map(function getValuesFromFields() {
-        let $this = $(this),
-          name = $this.attr('name');
-
-        switch (name) {
-          case 'dataType':
-            if ($this.is(':checked')) {
-              data[name] = $this.val();
-            }
-            break;
-          default:
-            data[name] = $this.val();
-            break;
-        }
-
-        return this;
-      });
+      // Retrieve connection data from input fields.
+      const data = getValuesFromFields($inputFields);
 
       // Initiate the data retrieval process.
       tableau.connectionName = "Github WDC";
@@ -60,10 +45,19 @@ tableau.registerConnector(wdc);
     });
   });
 
+  /**
+   * Perform Github OAuth,
+   */
   function oAuthRedirect() {
     window.location.href = '/github/login/oauth';
   }
 
+  /**
+   * Update the UI depending on whether the user has authenticated.
+   *
+   * @param {bool}[isAuthenticated]
+   *  TRUE if the user is authenticated, FALSE otherwise.
+   */
   function updateUI(isAuthenticated) {
     if (isAuthenticated) {
       $(".anonymous").hide();
@@ -72,6 +66,44 @@ tableau.registerConnector(wdc);
       $(".anonymous").show();
       $(".authenticated").hide();
     }
+  }
+
+  /**
+   * Set default field values.
+   *
+   * @param $fields
+   *  Fields to iterate over.
+   * @param {object}[data]
+   *  Values to assign.
+   */
+  function setFieldsFromValues($fields, data) {
+    $fields.each(function (index, value) {
+      const $field = $(this),
+        name = $field.attr('name'),
+        type = $field.attr('type');
+
+      if (_.has(data, name)) {
+        $field.val(data[name]);
+      }
+    });
+  }
+
+  /**
+   * Retrieve a list of field values by field name.
+   * @param $fields
+   *  Fields to iterate over.
+   */
+  function getValuesFromFields($fields) {
+    const data = {};
+
+    $fields.each(function (index, value) {
+      const $field = $(this),
+        name = $field.attr('name');
+
+      data[name] = $field.val();
+    });
+
+    return data;
   }
 
 })(jQuery);
