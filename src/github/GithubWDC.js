@@ -182,8 +182,7 @@ class GithubWDC {
 
               resolve(raw);
             }).catch((err) => {
-              tableau.log('Invalid Github API request: ' + url);
-              reject(err);
+              reject('Invalid Github API request: ' + url);
             });
           });
         }
