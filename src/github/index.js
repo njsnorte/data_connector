@@ -9,13 +9,7 @@ tableau.registerConnector(wdc);
 
 (function ($) {
   $(document).ready(function () {
-    const accessToken = Cookies.get("accessToken") || false,
-      isAuthenticated = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
-        tableau.password.length > 0,
-      $inputFields = $('input, select, textarea').not('[type="submit"]');
-
-    // Update the UI to reflect the authentication status.
-    updateUI(isAuthenticated);
+    const $inputFields = $('input, select, textarea').not('[type="submit"]');
 
     // Set default values (base on connection data).
     setFieldsFromValues($inputFields, wdc.getConnectionData());
@@ -47,19 +41,12 @@ tableau.registerConnector(wdc);
   });
 
   /**
-   * Perform Github OAuth,
-   */
-  function oAuthRedirect() {
-    window.location.href = '/github/login/oauth';
-  }
-
-  /**
    * Update the UI depending on whether the user has authenticated.
    *
    * @param {bool}[isAuthenticated]
    *  TRUE if the user is authenticated, FALSE otherwise.
    */
-  function updateUI(isAuthenticated) {
+  $(document).on('updateUI', function (e, isAuthenticated) {
     if (isAuthenticated) {
       $(".anonymous").hide();
       $(".authenticated").show();
@@ -67,6 +54,13 @@ tableau.registerConnector(wdc);
       $(".anonymous").show();
       $(".authenticated").hide();
     }
+  });
+
+  /**
+   * Perform Github OAuth,
+   */
+  function oAuthRedirect() {
+    window.location.href = '/github/login/oauth';
   }
 
   /**

@@ -33,24 +33,38 @@ class GithubWDC {
    */
   init(cb) {
     const accessToken = Cookies.get("accessToken") || false,
-      isAuthenticated = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
+      hasAccessToken = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
         tableau.password.length > 0;
 
     // Set the authentication method to custom.
     tableau.authType = tableau.authTypeEnum.custom;
 
+    if (tableau.phase === tableau.phaseEnum.gatherDataPhase) {
+      // Initialize our Github API.
+      this._ghApi = new Github(this._getAuthentication());
+
+      // Validate access token.
+      this._ghApi.getRateLimit().catch((err) => {
+        tableau.log("Invalid accessToken.");
+        tableau.abortForAuth();
+      });
+    }
+
+    // Update the UI to reflect the authentication status.
+    $(document).trigger('updateUI', hasAccessToken);
+
     cb();
 
     switch (tableau.phase) {
       case tableau.phaseEnum.authPhase:
-        if (isAuthenticated) {
+        if (hasAccessToken) {
           tableau.password = accessToken;
           // Auto-submit.
           tableau.submit();
         }
         break;
       case tableau.phaseEnum.interactivePhase:
-        if (isAuthenticated) {
+        if (hasAccessToken) {
           tableau.password = accessToken;
         }
         break;
@@ -97,9 +111,6 @@ class GithubWDC {
    */
   getSchema(cb) {
     this._requestType = this.getConnectionData('dataType');
-
-    // Initialize our Github API.
-    this._ghApi = new Github(this._getAuthentication());
 
     switch (this._requestType) {
       case Github.ISSUE:
@@ -170,6 +181,9 @@ class GithubWDC {
               raw = raw.concat(...result);
 
               resolve(raw);
+            }).catch((err) => {
+              tableau.log('Invalid Github API request: ' + url);
+              reject(err);
             });
           });
         }
@@ -184,7 +198,7 @@ class GithubWDC {
       pool.start().then(() => {
         resolve(raw);
       }, (err) => {
-        tableau.log(err);
+        tableau.abortWithError(err);
       });
     });
   }
