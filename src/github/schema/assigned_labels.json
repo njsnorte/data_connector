@@ -2,7 +2,7 @@
   "alias": "assigned_labels",
   "id": "assigned_labels",
   "columns": [
-    { "id": "parent_id", "alias": "parent_id", "dataType": "int", "description": "The object this label belongs to (Issue or PR)." },
-    { "id": "label_id", "alias": "label_id", "dataType": "int", "description": "The id of this label." }
+    { "id": "parent_id", "alias": "parent_id", "dataType": "int", "columnRole": "dimension", "description": "The object this label belongs to (Issue or PR)." },
+    { "id": "label_id", "alias": "label_id", "dataType": "int", "columnRole": "dimension", "description": "The id of this label." }
   ]
 }
