@@ -142,9 +142,6 @@ class GithubWDC {
       const query = this.getConnectionData('query'),
         urls = parseQuery(query);
 
-      // Set our flag to true to ensure we don't run this twice.
-      this._queryExecuted = true;
-
       return this._request(urls, 5);
     }
   }
@@ -214,6 +211,8 @@ class GithubWDC {
 
     this._query().then((rawData) => {
       if (rawData) {
+        // Set our flag to true to ensure we don't run the query more than once.
+        this._queryExecuted = true;
         // Process the actual raw data.
         this._gh.processData(rawData).then((processedData) => {
           // Save our processed data.
