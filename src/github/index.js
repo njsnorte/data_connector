@@ -10,11 +10,12 @@ tableau.registerConnector(wdc);
 (function ($) {
   $(document).ready(function () {
     const accessToken = Cookies.get("accessToken") || false,
-      isAuthenticated = accessToken && accessToken !== 'undefined' && accessToken.length > 0,
+      isAuthenticated = (accessToken && accessToken !== 'undefined' && accessToken.length > 0) ||
+        tableau.password.length > 0,
       $inputFields = $('input, select, textarea').not('[type="submit"]');
 
     // Update the UI to reflect the authentication status.
-    updateUI(true);
+    updateUI(isAuthenticated);
 
     // Set default values (base on connection data).
     setFieldsFromValues($inputFields, wdc.getConnectionData());

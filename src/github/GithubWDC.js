@@ -43,6 +43,12 @@ class GithubWDC {
 
     switch (tableau.phase) {
       case tableau.phaseEnum.authPhase:
+        if (isAuthenticated) {
+          tableau.password = accessToken;
+          // Auto-submit.
+          tableau.submit();
+        }
+        break;
       case tableau.phaseEnum.interactivePhase:
         if (isAuthenticated) {
           tableau.password = accessToken;
