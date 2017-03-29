@@ -14,11 +14,11 @@ tableau.registerConnector(wdc);
     // Set default values (base on connection data).
     setFieldsFromValues($inputFields, wdc.getConnectionData());
 
-    // Handle Github OAuth.
+    // Handles Github OAuth.
     $("#authenticate").click(oAuthRedirect);
 
-    //
-    $('input[name=searchType]:radio, input[name=dataType]:radio').change(function() {
+    // Handles data-type examples.
+    $('input[name=dataType]:radio').change(function() {
       const dataType = $('input[name=dataType]:checked').val();
 
       // Show examples
@@ -78,7 +78,14 @@ tableau.registerConnector(wdc);
         type = $field.attr('type');
 
       if (_.has(data, name)) {
-        $field.val(data[name]);
+        switch (type) {
+          case 'radio':
+            $field.check();
+            break;
+          default:
+            $field.val(data[name]);
+            break;
+        }
       }
     });
   }
@@ -93,9 +100,19 @@ tableau.registerConnector(wdc);
 
     $fields.each(function (index, value) {
       const $field = $(this),
-        name = $field.attr('name');
+        name = $field.attr('name'),
+        type = $field.attr('type');
 
-      data[name] = $field.val();
+      switch (type) {
+        case 'radio':
+          if ($field.is(':checked')) {
+            data[name] = $field.val();
+          }
+          break;
+        default:
+          data[name] = $field.val();
+          break;
+      }
     });
 
     return data;

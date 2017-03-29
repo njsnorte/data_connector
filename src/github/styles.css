@@ -1,3 +1,14 @@
+ul {
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+.mdl-grid.mdl-grid--nesting {
+  margin: 0;
+}
 .github-wdc-card .mdl-card__title {
   background: url('/github/assets/gh-logo.png') center left 10px no-repeat #000000;
   background-color: #000000 !important;
