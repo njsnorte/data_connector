@@ -91,7 +91,7 @@ class Traffic extends GithubObject {
         break;
     }
 
-    return super.parseQuery(query + '?' + options);
+    return super.parseQuery(url + '?' + options);
   }
 
   /**
