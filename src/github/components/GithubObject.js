@@ -84,6 +84,36 @@ class GithubObject {
   }
 
   /**
+   * Parse query into useful API request urls.
+   *
+   * @param {string} [query]
+   *  Query string to the API base.
+   * @param {string} [tableId]
+   *  The table identifier.
+   * @return {Array}
+   *  Array of urls.
+   */
+  parseQuery(query, tableId) {
+    const base = 'https://api.github.com/',
+      re = /\[(.*)\]/g,
+      match = re.exec(query);
+    const urls = [];
+
+    // Look for any arrays in our query string.
+    if (match !== null) {
+      const delimited = match[1].split(',');
+
+      for(const value of delimited) {
+        urls.push(base + query.replace(re, value));
+      }
+    } else {
+      urls.push(base + query);
+    }
+
+    return urls;
+  }
+
+  /**
    * Make a request and fetch all available data (support pagination).
    *
    * @param {string} [url]
@@ -133,6 +163,13 @@ class GithubObject {
         }
       }
 
+      // Include request url to all result objects.
+      results.forEach((element) => {
+        element._request_url = url;
+      });
+
+      console.log(results);
+
       return results;
     }).catch(function (err) {
       log(err);
@@ -144,12 +181,18 @@ class GithubObject {
    * Process our objects into a format that is more Tableau friendly.
    * Isolate nested objects and arrays and store them in separate 'tables'.
    *
-   * @param {Array} [data]
+   * @param {Object} [result]
+   *  An object where you wish to save the processed data onto.
+   * @param {string} [tableId]
+   *  The identifier of the table that is being requested.
+   * @param {Array} [rawData]
    *  An array of objects to process.
    * @returns {Promise}
    */
-  processData(data) {
-    return data;
+  processData(result, tableId, rawData) {
+    result[tableId] = rawData;
+
+    return result;
   }
 
 }

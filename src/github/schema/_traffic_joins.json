@@ -1,0 +1,62 @@
+[
+  {
+    "alias": "Joined traffic data",
+    "tables": [{
+      "id": "repos",
+      "alias": "repos"
+    }, {
+      "id": "traffic_clones",
+      "alias": "traffic_clones"
+    }, {
+      "id": "traffic_popular_paths",
+      "alias": "traffic_popular_paths"
+    }, {
+      "id": "traffic_popular_referrers",
+      "alias": "traffic_popular_referrers"
+    }, {
+      "id": "traffic_views",
+      "alias": "traffic_views"
+    }],
+    "joins": [{
+      "left": {
+        "tableAlias": "repos",
+        "columnId": "full_name"
+      },
+      "right": {
+        "tableAlias": "traffic_clones",
+        "columnId": "repo_name"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "repos",
+        "columnId": "full_name"
+      },
+      "right": {
+        "tableAlias": "traffic_popular_paths",
+        "columnId": "repo_name"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "repos",
+        "columnId": "full_name"
+      },
+      "right": {
+        "tableAlias": "traffic_popular_referrers",
+        "columnId": "repo_name"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "repos",
+        "columnId": "full_name"
+      },
+      "right": {
+        "tableAlias": "traffic_views",
+        "columnId": "repo_name"
+      },
+      "joinType": "left"
+    }]
+  }
+]
