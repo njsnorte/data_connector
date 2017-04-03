@@ -11,7 +11,7 @@ var express = require('express'),
 env(__dirname + '/.env');
 
 // Variables.
-var port = process.env.PORT || 9002;
+var port = process.env.PORT || 9001;
 
 // Express set-up.
 app.set('port', port);

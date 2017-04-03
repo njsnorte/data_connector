@@ -1,8 +1,10 @@
 "use strict";
 
 import Github from './components/Github';
-import PromisePool from 'es6-promise-pool';
 import _ from 'lodash';
+
+// Global variables
+let gh;
 
 /**
  * Wrapper around the Tableau WDC for using the Github API.
@@ -11,22 +13,11 @@ class GithubWDC {
 
   constructor() {
     this._cache = {};
-    this._ghApi = {};
-    this._gh = {};
     this._requestType = null;
-    this._preFetched = false;
-  }
-
-  get cache() {
-    return this._cache;
-  }
-
-  set cache(cache) {
-    this._cache = cache;
   }
 
   /**
-   * Implements Tableau WDC init().
+   * Implements Tableau WDC init().gulp
    *
    * @param {function} [cb]
    *  Callback function.
@@ -41,10 +32,11 @@ class GithubWDC {
 
     if (tableau.phase === tableau.phaseEnum.gatherDataPhase) {
       // Initialize our Github API.
-      this._ghApi = new Github(this._getAuthentication());
+      this._requestType = this.getConnectionData('dataType');
+      gh = Github.create(this._requestType, this._getAuthentication());
 
       // Validate access token.
-      this._ghApi.getRateLimit().catch((err) => {
+      gh.getRateLimit().catch((err) => {
         tableau.log("Invalid accessToken.");
         tableau.abortForAuth();
       });
@@ -110,76 +102,9 @@ class GithubWDC {
    *  Callback function.
    */
   getSchema(cb) {
-    this._requestType = this.getConnectionData('dataType');
-
-    switch (this._requestType) {
-      case Github.ISSUE:
-        this._gh = this._ghApi.getIssues();
-        break;
-      case Github.PULL_REQUEST:
-        this._gh = this._ghApi.getPulls();
-        break;
-      case Github.TRAFFIC:
-        this._gh = this._ghApi.getTraffic();
-        break;
-    }
-
     // Add schema objects to array of promises.
-    this._gh.getSchema().then((schema) => {
+    gh.getSchema().then((schema) => {
       cb(schema['tables'], schema['joins']);
-    });
-  }
-
-  /**
-   * Concurrently runs API requests for a number of given urls.
-   *
-   * @param {array}(urls)
-   *  A list of urls to call using the API.
-   * @param {number}(concurrency)
-   *  The number of concurrent API calls we can make.
-   *
-   * @returns {Promise}
-   * @private
-   */
-  _request(urls, concurrency = 5) {
-    return new Promise((resolve, reject) => {
-      let count = 0,
-        producer,
-        pool,
-        raw = [];
-
-      // A Promise Pool producer generates promises as long as there is work left
-      // to be done. We return null to notify the pool is empty.
-      producer = () => {
-        if (count < urls.length) {
-          let url = urls[count];
-          count++;
-
-          // The actual API request for a given url.
-          return new Promise((resolve, reject) => {
-            this._gh.request(url).then((result) => {
-              // Append all our raw data.
-              raw = raw.concat(...result);
-
-              resolve(raw);
-            }).catch((err) => {
-              reject('Invalid Github API request: ' + url);
-            });
-          });
-        }
-        else {
-          return null;
-        }
-      };
-
-      // Run our promises concurrently, but never exceeds the maximum number of
-      // concurrent promises.
-      pool = new PromisePool(producer, concurrency);
-      pool.start().then(() => {
-        resolve(raw);
-      }, (err) => {
-        tableau.abortWithError(err);
-      });
     });
   }
 
@@ -191,31 +116,31 @@ class GithubWDC {
    *  Callback function.
    */
   getData(table, cb) {
-    const tableId = table.tableInfo.id;
+    const tableId = table.tableInfo.id,
+      query = this.getConnectionData('query');
 
     if(_.has(this._cache, tableId)) {
       table.appendRows(this._cache[tableId]);
       cb();
     }
     else {
-      const query = this.getConnectionData('query'),
-        urls = this._gh.parseQuery(query, tableId);
+      let url = query.split('?')[0],
+        options = getUrlParams(query.split('?')[1]);
+      const urls = gh.parseUrl(url, options, tableId);
 
-      this
-        ._request(urls, 5)
+      gh
+        .getData(urls, 5)
         .then((rawData) => {
-          console.log(rawData);
-          return this._gh.processData(this._cache, tableId, rawData);
-        }).then((processedData) => {
-          console.log(processedData);
+          return gh.processData(this._cache, tableId, rawData);
+      }).then((processedData) => {
           this._cache = processedData;
           return Promise.resolve(true);
-        }).then(() => {
+      }).then(() => {
           table.appendRows(this._cache[tableId]);
           cb();
-        }).catch((err) => {
-          reject(err);
-        });
+      }).catch((err) => {
+          tableau.abortWithError(err);
+      });
     }
   }
 
@@ -233,3 +158,21 @@ class GithubWDC {
 module.exports = GithubWDC;
 
 // Private helper functions.
+
+/**
+ * Retrieve query parameters from a given query string.
+ *
+ * @param {string} [queryString]
+ * @returns {{}}
+ */
+function getUrlParams(queryString = '') {
+  const options = queryString.split('&'),
+    result = {};
+
+  options.map(option => {
+    let [key, val] = option.split('=');
+    result[key] = decodeURIComponent(val)
+  });
+
+  return result;
+}

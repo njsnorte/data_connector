@@ -1,4 +1,6 @@
 import {Base64} from 'js-base64';
+import PromisePool from 'es6-promise-pool';
+import $ from 'jquery';
 import req from 'request-promise';
 import debug from 'debug';
 
@@ -37,6 +39,17 @@ class GithubObject {
     } else if (auth.username && auth.password) {
       this._auth.header= 'Basic ' + Base64.encode(auth.username + ':' + auth.password);
     }
+  }
+
+  /**
+   * Make a request to Github to fetch the ratelimit(s).
+   *
+   * @return {Promise)
+   *  The Promise for the rate limit request.
+   */
+  getRateLimit() {
+    const url = this._base + 'rate_limit';
+    return this._request(url);
   }
 
   /**
@@ -86,31 +99,87 @@ class GithubObject {
   /**
    * Parse query into useful API request urls.
    *
-   * @param {string} [query]
-   *  Query string to the API base.
+   * @param {string} [url]
+   *  Request URI relative to the API base.
+   * @param {Object} [options]
+   *  Optional object of query parameters.
    * @param {string} [tableId]
    *  The table identifier.
    * @return {Array}
    *  Array of urls.
    */
-  parseQuery(query, tableId) {
+  parseUrl(url, options = {}, tableId) {
     const base = 'https://api.github.com/',
       re = /\[(.*)\]/g,
-      match = re.exec(query);
-    const urls = [];
+      match = re.exec(url),
+      queryString = $.param(options),
+      urls = [];
 
     // Look for any arrays in our query string.
     if (match !== null) {
       const delimited = match[1].split(',');
 
       for(const value of delimited) {
-        urls.push(base + query.replace(re, value));
+        urls.push(base + url.replace(re, value) + '?' + queryString);
       }
     } else {
-      urls.push(base + query);
+      urls.push(base + url + '?' + queryString);
     }
 
     return urls;
+  }
+
+  /**
+   * Concurrently runs API requests for a number of given urls.
+   *
+   * @param {array}(urls)
+   *  A list of urls to call using the API.
+   * @param {number}(concurrency)
+   *  The number of concurrent API calls we can make.
+   *
+   * @returns {Promise}
+   * @private
+   */
+  getData(urls, concurrency = 5) {
+    return new Promise((resolve, reject) => {
+      let count = 0,
+        producer,
+        pool,
+        raw = [];
+
+      // A Promise Pool producer generates promises as long as there is work left
+      // to be done. We return null to notify the pool is empty.
+      producer = () => {
+        if (count < urls.length) {
+          let url = urls[count];
+          count++;
+
+          // The actual API request for a given url.
+          return new Promise((resolve, reject) => {
+            this._request(url).then((result) => {
+              // Append all our raw data.
+              raw = raw.concat(...result);
+
+              resolve(raw);
+            }).catch((err) => {
+              reject('Invalid Github API request: ' + url);
+            });
+          });
+        }
+        else {
+          return null;
+        }
+      };
+
+      // Run our promises concurrently, but never exceeds the maximum number of
+      // concurrent promises.
+      pool = new PromisePool(producer, concurrency);
+      pool.start().then(() => {
+        resolve(raw);
+      }, (err) => {
+        reject(err);
+      });
+    });
   }
 
   /**
@@ -126,7 +195,7 @@ class GithubObject {
    * @return {Promise}
    *  The Promise for the http request
    */
-  request(url, options = {}, results = []) {
+  _request(url, options = {}, results = []) {
     const config = {
       url: url,
       method: 'GET',
@@ -167,8 +236,6 @@ class GithubObject {
       results.forEach((element) => {
         element._request_url = url;
       });
-
-      console.log(results);
 
       return results;
     }).catch(function (err) {

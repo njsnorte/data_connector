@@ -1,7 +1,7 @@
 import GithubObject from './GithubObject';
-import debug from 'debug';
 import $ from 'jquery';
 import _ from 'lodash';
+import debug from 'debug';
 
 const log = debug('issues');
 

@@ -3,77 +3,34 @@ import Issues from './Issues';
 import Pulls from './Pulls';
 import Traffic from './Traffic';
 
+"use strict";
+
+const ISSUE = 'issues';
+const PULL_REQUEST = 'pulls';
+const TRAFFIC = 'traffic';
+
 /**
- * Make simple API calls to the Github API.
+ * Factory.
  */
-class Github {
-  /**
-   * Static Constants.
-   */
-  static get ISSUE() {
-    return 'issues';
-  }
-  static get PULL_REQUEST() {
-    return 'pulls';
-  }
-  static get TRAFFIC() {
-    return 'traffic';
-  }
+const Github = {
 
-  /**
-   * Initialize our Github API.
-   *
-   * @param {GithubObject.auth} [auth]
-   *  The credentials used to authenticate with Github. If not provided
-   *  requests will be made unauthenticated.
-   * @param {string} [base]
-   *  The base of the API url.
-   */
-  constructor(auth = {}, base = 'https://api.github.com/') {
-    this._base = base;
-    this._auth = auth;
+  create(type, auth = {}, base = 'https://api.github.com/') {
+    switch (type) {
+      case ISSUE:
+        return new Issues(auth, base);
+        break;
+      case PULL_REQUEST:
+        return new Pulls(auth, base);
+        break;
+      case TRAFFIC:
+        return new Traffic(auth, base);
+        break;
+      default:
+        return new GithubObject(auth, base);
+        break;
+    }
   }
-
-  /**
-   * Make a request to Github to fetch the ratelimit(s).
-   *
-   * @return {Promise)
-   *  The Promise for the rate limit request.
-   */
-  getRateLimit() {
-    const api = new GithubObject(this._auth, this._base),
-      url = this._base + 'rate_limit';
-    return api.request(url);
-  }
-
-  /**
-   * Get a wrapper around Github Issues.
-   *
-   * @return {Issues}
-   */
-  getIssues() {
-    return new Issues(this._auth, this._base);
-  }
-
-  /**
-   * Get a wrapper around Github Issues.
-   *
-   * @return {Pulls}
-   */
-  getPulls() {
-    return new Pulls(this._auth, this._base);
-  }
-
-  /**
-   * Get a wrapper around Github Traffic Stats.
-   *
-   * @return {Traffic}
-   */
-  getTraffic() {
-    return new Traffic(this._auth, this._base);
-  }
-
-}
+};
 
 export default Github;
 

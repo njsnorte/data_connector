@@ -1,7 +1,7 @@
 import GithubObject from './GithubObject';
-import debug from 'debug';
 import $ from 'jquery';
 import _ from 'lodash';
+import debug from 'debug';
 
 const log = debug('traffic');
 
@@ -59,18 +59,16 @@ class Traffic extends GithubObject {
   /**
    * Parse query into useful API request urls.
    *
-   * @param {string} [query]
-   *  Query string to the API base.
+   * @param {string} [url]
+   *  Request URI relative to the API base.
+   * @param {Object} [options]
+   *  Optional object of query parameters.
    * @param {string} [tableId]
    *  The table identifier.
    * @return {Array}
    *  Array of urls.
    */
-  parseQuery(query, tableId) {
-    let url = query.split('?').slice(0),
-      options = query.split('?').slice(1);
-
-
+  parseUrl(url, options, tableId) {
     switch (tableId) {
       case 'traffic_clones':
         url += '/clones';
@@ -85,13 +83,13 @@ class Traffic extends GithubObject {
         url += '/views';
         break;
       case 'repos':
-        url = query.replace(/\/traffic/ig, '');
+        url = url.replace(/\/traffic/ig, '');
         break;
       default:
         break;
     }
 
-    return super.parseQuery(url + '?' + options);
+    return super.parseUrl(url, options, tableId);
   }
 
   /**
@@ -121,8 +119,6 @@ class Traffic extends GithubObject {
             repo_name = match[2];
           }
         }
-
-        console.log(repo_name);
 
         switch (tableId) {
           case 'traffic_views':
