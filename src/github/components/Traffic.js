@@ -67,29 +67,31 @@ class Traffic extends GithubObject {
    *  Array of urls.
    */
   parseQuery(query, tableId) {
-    const options = query.split('?').slice(1).join('?');
+    let url = query.split('?').slice(0),
+      options = query.split('?').slice(1);
+
 
     switch (tableId) {
       case 'traffic_clones':
-        query += '/clones';
+        url += '/clones';
         break;
       case 'traffic_popular_paths':
-        query += '/popular/paths';
+        url += '/popular/paths';
         break;
       case 'traffic_popular_referrers':
-        query += '/popular/referrers';
+        url += '/popular/referrers';
         break;
       case 'traffic_views':
-        query += '/views';
+        url += '/views';
         break;
       case 'repos':
-        query = query.replace(/\/traffic/ig, '');
+        url = query.replace(/\/traffic/ig, '');
         break;
       default:
         break;
     }
 
-    return super.parseQuery(query + options);
+    return super.parseQuery(query + '?' + options);
   }
 
   /**
