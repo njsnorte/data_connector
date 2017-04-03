@@ -139,7 +139,7 @@ class GithubObject {
    * @returns {Promise}
    * @private
    */
-  getData(urls, options, concurrency = 5) {
+  getData(urls, options = {}, concurrency = 5) {
     return new Promise((resolve, reject) => {
       let count = 0,
         producer,
@@ -227,7 +227,7 @@ class GithubObject {
       if (response.headers.link) {
         const nextPage = getNextPage(response.headers.link);
         if (nextPage) {
-          return this.request(nextPage, options, results);
+          return this._request(nextPage, options, results);
         }
       }
 

@@ -165,7 +165,7 @@ module.exports = GithubWDC;
  * @returns {{}}
  */
 function getUrlParams(queryString = '') {
-  const options = queryString.split('&'),
+  const options = queryString ? queryString.split('&') : [],
     result = {};
 
   options.map(option => {
