@@ -44,21 +44,14 @@
                     <form class="mdl-grid mdl-grid--nesting mdl-color-text--grey-700">
                         <div class="search-options mdl-cell mdl-cell--6-col mdl-cell--12-col-phone mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
                             <h4>Get your data!</h4>
-                            <h6>Data Type</h6>
-                            <ul>
-                                <li>
-                                    <label class="mdl-radio mdl-js-radio" for="data-type-issues">
-                                        <input type="radio" id="data-type-issues" class="mdl-radio__button" name="dataType" value="issues" checked />
-                                        <span class="mdl-radio__label">Issues</span>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="mdl-radio mdl-js-radio" for="data-type-pr">
-                                        <input type="radio" id="data-type-pr" class="mdl-radio__button" name="dataType" value="pulls" />
-                                        <span class="mdl-radio__label">Pull Requests</span>
-                                    </label>
-                                </li>
-                            </ul>
+                            <div class="mdl-selectfield mdl-js-selectfield">
+                                <label class="mdl-selectfield__label" for="data-type-issues">Data Type</label>
+                                <select class="mdl-selectfield__select" id="data-type-issues" name="dataType">
+                                    <option value="issues">Issues</option>
+                                    <option value="pulls">Pull Requests</option>
+                                    <option value="traffic">Traffic Stats</option>
+                                </select>
+                            </div>
                             <h6>Query</h6>
                             <div class="mdl-textfield mdl-textfield--full-width mdl-js-textfield mdl-textfield--floating-label">
                                 <input class="mdl-textfield__input" type="text" name="query" id="query" required />
@@ -79,7 +72,7 @@
                                     <p>Get all issues in a repository:</p>
                                     <pre><code>repos/:owner/:repo/issues</code></pre>
                                     <p>Get all issues in multiple repositories:</p>
-                                    <pre><code>repos/:owner/[:repo1,:repo2]/issues</code></pre>
+                                    <pre><code>repos/[:owner1/:repo1,:owner2/:repo2]/issues</code></pre>
                                     <p>Search for all open issues (not pr's).<em>This is across all the authenticated user’s visible repositories including owned repositories,
                                         member repositories, and organization repositories:</em>
                                     </p>
@@ -88,6 +81,12 @@
                                 <div id="help-pulls" style="display:none;">
                                     <p>Get all pull requests in a repository:</p>
                                     <pre><code>repos/:owner/:repo/pulls</code></pre>
+                                </div>
+                                <div id="help-traffic" style="display:none;">
+                                    <p>Get stats for one repository:</p>
+                                    <pre><code>repos/:owner/:repo/traffic</code></pre>
+                                    <p>Get stats for multiple repositories:</p>
+                                    <pre><code>repos/[:owner1/:repo1,:owner2/:repo2]/traffic</code></pre>
                                 </div>
                                 <em>More information can be found on <a href="https://developer.github.com/v3">Github</a>.</em>
                             </div>

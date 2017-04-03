@@ -1,6 +1,7 @@
 import GithubObject from './GithubObject';
 import Issues from './Issues';
 import Pulls from './Pulls';
+import Traffic from './Traffic';
 
 /**
  * Make simple API calls to the Github API.
@@ -14,6 +15,9 @@ class Github {
   }
   static get PULL_REQUEST() {
     return 'pulls';
+  }
+  static get TRAFFIC() {
+    return 'traffic';
   }
 
   /**
@@ -58,6 +62,15 @@ class Github {
    */
   getPulls() {
     return new Pulls(this._auth, this._base);
+  }
+
+  /**
+   * Get a wrapper around Github Traffic Stats.
+   *
+   * @return {Traffic}
+   */
+  getTraffic() {
+    return new Traffic(this._auth, this._base);
   }
 
 }

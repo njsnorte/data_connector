@@ -62,31 +62,35 @@ class Issues extends GithubObject {
    * Isolate nested objects and arrays (e.g. user, assignees, labels and milestone)
    * and store them in separate 'tables'.
    *
-   * @param {Array} [data]
-   *  An array of issues to process.
+   * @param {Object} [result]
+   *  An object where you wish to save the processed data onto.
+   * @param {string} [tableId]
+   *  The identifier of the table that is being requested.
+   * @param {Array} [rawData]
+   *  An array of objects to process.
    * @returns {Promise}
    */
-  processData(data) {
-    const processedData = {
+  processData(result, tableId, rawData) {
+    result = _.assignIn(result, {
       'assigned_labels': [],
       'assignees': [],
       'issues': [],
       'labels': [],
       'milestones': [],
       'users': [],
-    };
+    });
 
     return new Promise((resolve, reject) => {
       // Isolate objects and arrays to make joins easier in Tableau.
-      _.forEach(data, (obj) => {
+      _.forEach(rawData, (obj) => {
         // Assignees.
         if (_.has(obj, 'assignees') && obj.assignees.length > 0) {
           _.forEach(obj.assignees, (assignee) => {
-            if(!_.find(processedData.users, {id: assignee.id})) {
+            if(!_.find(result.users, {id: assignee.id})) {
               ['users'].push(assignee);
             }
 
-            processedData['assignees'].push({
+            result['assignees'].push({
               'parent_id': obj.id,
               'user_id': assignee.id,
             });
@@ -96,11 +100,11 @@ class Issues extends GithubObject {
         // Labels.
         if (_.has(obj, 'labels') && obj.labels.length > 0) {
           _.forEach(obj.labels, (label) => {
-            if(!_.find(processedData.labels, {id: label.id})) {
-              processedData['labels'].push(label);
+            if(!_.find(result.labels, {id: label.id})) {
+              result['labels'].push(label);
             }
 
-            processedData['assigned_labels'].push({
+            result['assigned_labels'].push({
               'parent_id': obj.id,
               'label_id': label.id,
             });
@@ -117,13 +121,13 @@ class Issues extends GithubObject {
             const user = milestone.creator;
             milestone.user_id = user.id;
 
-            if(!_.find(processedData.users, {id: milestone.user_id})) {
-              processedData['users'].push(user);
+            if(!_.find(result.users, {id: milestone.user_id})) {
+              result['users'].push(user);
             }
           }
 
-          if(!_.find(processedData.milestones, {id: milestone.id})) {
-            processedData['milestones'].push(milestone);
+          if(!_.find(result.milestones, {id: milestone.id})) {
+            result['milestones'].push(milestone);
           }
         }
 
@@ -132,28 +136,31 @@ class Issues extends GithubObject {
           const user = obj.user;
           obj.user_id = user.id;
 
-          if(!_.find(processedData.users, {id: user.id})) {
-            processedData['users'].push(user);
+          if(!_.find(result.users, {id: user.id})) {
+            result['users'].push(user);
           }
         }
 
         // Issue data.
-        if(!_.find(processedData.issues, {id: obj.id})) {
+        if(!_.find(result.issues, {id: obj.id})) {
           // Add repository information.
           if (_.has(obj, 'repository_url')) {
-            obj.repo_name = obj.repository_url
-              .substr(obj.repository_url
-              .lastIndexOf('/') + 1);
+            const re = /repos\/([\w\-\.]+)\/([\w\-\.]+)/gi,
+              match = re.exec(obj['repository_url']);
+
+            if (match !== null) {
+              obj.repo_name = match[1] + '/' + match[2];
+            }
           }
 
           // Distinguish issues from pull requests.
           obj.is_pull_request = _.has(obj, 'pull_request');
 
-          processedData.issues.push(obj);
+          result.issues.push(obj);
         }
       });
 
-      resolve(processedData);
+      resolve(result);
     });
   }
 

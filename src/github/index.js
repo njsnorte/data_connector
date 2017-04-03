@@ -18,8 +18,8 @@ tableau.registerConnector(wdc);
     $("#authenticate").click(oAuthRedirect);
 
     // Handles data-type examples.
-    $('input[name=dataType]:radio').change(function() {
-      const dataType = $('input[name=dataType]:checked').val();
+    $('select[name=dataType]').change(function() {
+      const dataType = $(this).val();
 
       // Show examples
       $('#help > div').hide();

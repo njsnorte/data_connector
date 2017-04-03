@@ -1,0 +1,10 @@
+{
+  "alias": "views",
+  "id": "traffic_views",
+  "columns": [
+    { "id": "repo_name", "alias": "repo_name", "dataType": "string", "description": "The repository these stats belongs to." },
+    { "id": "timestamp", "alias": "timestamp", "dataType": "datetime", "description": "The timestamp for these stats." },
+    { "id": "count", "alias": "count", "dataType": "int", "description": "The number of views." },
+    { "id": "uniques", "alias": "uniques", "dataType": "int", "description": "The unique number of views." }
+  ]
+}

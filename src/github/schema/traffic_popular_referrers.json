@@ -1,0 +1,10 @@
+{
+  "alias": "popular referrers",
+  "id": "traffic_popular_referrers",
+  "columns": [
+    { "id": "repo_name", "alias": "repo_name", "dataType": "string", "description": "The repository these stats belongs to." },
+    { "id": "referrer", "alias": "referrer", "dataType": "string", "description": "The identifier for this referrer." },
+    { "id": "count", "alias": "count", "dataType": "int", "description": "The number of referrals." },
+    { "id": "uniques", "alias": "uniques", "dataType": "int", "description": "The unique number of referrals." }
+  ]
+}

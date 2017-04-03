@@ -119,31 +119,15 @@ class GithubWDC {
       case Github.PULL_REQUEST:
         this._gh = this._ghApi.getPulls();
         break;
+      case Github.TRAFFIC:
+        this._gh = this._ghApi.getTraffic();
+        break;
     }
 
     // Add schema objects to array of promises.
     this._gh.getSchema().then((schema) => {
       cb(schema['tables'], schema['joins']);
     });
-  }
-
-  /**
-   * Runs the main API request given the query and caches its results.
-   *
-   * @returns {Promise}
-   * @private
-   */
-  _query() {
-    // Don't run the query multiple times.
-    if (this._queryExecuted) {
-      return Promise.resolve();
-    }
-    else {
-      const query = this.getConnectionData('query'),
-        urls = parseQuery(query);
-
-      return this._request(urls, 5);
-    }
   }
 
   /**
@@ -157,7 +141,7 @@ class GithubWDC {
    * @returns {Promise}
    * @private
    */
-  _request(urls, concurrency = 3) {
+  _request(urls, concurrency = 5) {
     return new Promise((resolve, reject) => {
       let count = 0,
         producer,
@@ -209,25 +193,30 @@ class GithubWDC {
   getData(table, cb) {
     const tableId = table.tableInfo.id;
 
-    this._query().then((rawData) => {
-      if (rawData) {
-        // Set our flag to true to ensure we don't run the query more than once.
-        this._queryExecuted = true;
-        // Process the actual raw data.
-        this._gh.processData(rawData).then((processedData) => {
-          // Save our processed data.
-          this.cache = processedData;
-        });
-      }
-    }).catch((err) => {
-      tableau.abortWithError(err);
-    }).then(() => {
-      const tableData = this.cache[tableId];
-      // Append the data to the table and hand it back to Tableau.
-      table.appendRows(tableData);
-
+    if(_.has(this._cache, tableId)) {
+      table.appendRows(this._cache[tableId]);
       cb();
-    });
+    }
+    else {
+      const query = this.getConnectionData('query'),
+        urls = this._gh.parseQuery(query, tableId);
+
+      this
+        ._request(urls, 5)
+        .then((rawData) => {
+          console.log(rawData);
+          return this._gh.processData(this._cache, tableId, rawData);
+        }).then((processedData) => {
+          console.log(processedData);
+          this._cache = processedData;
+          return Promise.resolve(true);
+        }).then(() => {
+          table.appendRows(this._cache[tableId]);
+          cb();
+        }).catch((err) => {
+          reject(err);
+        });
+    }
   }
 
   /**
@@ -244,31 +233,3 @@ class GithubWDC {
 module.exports = GithubWDC;
 
 // Private helper functions.
-
-/**
- * Parse query into useful API request urls.
- *
- * @param {string} [query]
- *  Query string to the API base.
- * @return {Array}
- *  Array of urls.
- */
-function parseQuery(query) {
-  const base = 'https://api.github.com/',
-    re = /\[(.*)\]/g,
-    match = re.exec(query);
-  const urls = [];
-
-  // Look for any arrays in our query string.
-  if (match !== null) {
-    const delimited = match[1].split(',');
-
-    for(const value of delimited) {
-      urls.push(base + query.replace(re, value));
-    }
-  } else {
-    urls.push(base + query);
-  }
-
-  return urls;
-}

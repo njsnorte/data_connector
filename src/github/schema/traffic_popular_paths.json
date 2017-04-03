@@ -1,0 +1,10 @@
+{
+  "alias": "popular paths",
+  "id": "traffic_popular_paths",
+  "columns": [
+    { "id": "repo_name", "alias": "repo_name", "dataType": "string", "description": "The repository these stats belongs to." },
+    { "id": "path", "alias": "path", "dataType": "string", "description": "The path to this popular content." },
+    { "id": "count", "alias": "count", "dataType": "int", "description": "The number of hits." },
+    { "id": "uniques", "alias": "uniques", "dataType": "int", "description": "The unique number of hits." }
+  ]
+}

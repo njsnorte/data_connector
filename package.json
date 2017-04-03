@@ -20,7 +20,6 @@
     "postinstall": "node node_modules/gulp/bin/gulp build"
   },
   "dependencies": {
-    "babel-polyfill": "^6.23.0",
     "cookie-parser": "^1.4.3",
     "debug": "^2.6.3",
     "es6-promise-pool": "^2.4.4",
