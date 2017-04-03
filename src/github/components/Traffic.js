@@ -61,14 +61,12 @@ class Traffic extends GithubObject {
    *
    * @param {string} [url]
    *  Request URI relative to the API base.
-   * @param {Object} [options]
-   *  Optional object of query parameters.
    * @param {string} [tableId]
    *  The table identifier.
    * @return {Array}
    *  Array of urls.
    */
-  parseUrl(url, options, tableId) {
+  parseUrl(url, tableId) {
     switch (tableId) {
       case 'traffic_clones':
         url += '/clones';
@@ -89,7 +87,7 @@ class Traffic extends GithubObject {
         break;
     }
 
-    return super.parseUrl(url, options, tableId);
+    return super.parseUrl(url, tableId);
   }
 
   /**

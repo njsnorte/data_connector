@@ -101,18 +101,15 @@ class GithubObject {
    *
    * @param {string} [url]
    *  Request URI relative to the API base.
-   * @param {Object} [options]
-   *  Optional object of query parameters.
    * @param {string} [tableId]
    *  The table identifier.
    * @return {Array}
    *  Array of urls.
    */
-  parseUrl(url, options = {}, tableId) {
+  parseUrl(url, tableId) {
     const base = 'https://api.github.com/',
       re = /\[(.*)\]/g,
       match = re.exec(url),
-      queryString = $.param(options),
       urls = [];
 
     // Look for any arrays in our query string.
@@ -120,10 +117,10 @@ class GithubObject {
       const delimited = match[1].split(',');
 
       for(const value of delimited) {
-        urls.push(base + url.replace(re, value) + '?' + queryString);
+        urls.push(base + url.replace(re, value));
       }
     } else {
-      urls.push(base + url + '?' + queryString);
+      urls.push(base + url);
     }
 
     return urls;
@@ -134,13 +131,15 @@ class GithubObject {
    *
    * @param {array}(urls)
    *  A list of urls to call using the API.
+   * @param {*} [options]
+   *  Additional options will be sent as query parameters.
    * @param {number}(concurrency)
    *  The number of concurrent API calls we can make.
    *
    * @returns {Promise}
    * @private
    */
-  getData(urls, concurrency = 5) {
+  getData(urls, options, concurrency = 5) {
     return new Promise((resolve, reject) => {
       let count = 0,
         producer,
@@ -156,7 +155,7 @@ class GithubObject {
 
           // The actual API request for a given url.
           return new Promise((resolve, reject) => {
-            this._request(url).then((result) => {
+            this._request(url, options).then((result) => {
               // Append all our raw data.
               raw = raw.concat(...result);
 

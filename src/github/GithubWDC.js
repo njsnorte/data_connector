@@ -124,12 +124,11 @@ class GithubWDC {
       cb();
     }
     else {
-      let url = query.split('?')[0],
+      const urls = gh.parseUrl(query.split('?')[0], tableId),
         options = getUrlParams(query.split('?')[1]);
-      const urls = gh.parseUrl(url, options, tableId);
 
       gh
-        .getData(urls, 5)
+        .getData(urls, options, 5)
         .then((rawData) => {
           return gh.processData(this._cache, tableId, rawData);
       }).then((processedData) => {
