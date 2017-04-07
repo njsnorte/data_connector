@@ -1,0 +1,20 @@
+{
+  "alias": "milestones",
+  "id": "milestones",
+  "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "columnRole": "dimension", "description": "The identifier for this milestone." },
+    { "id": "url", "alias": "url", "dataType": "string", "description": "The url for this milestone." },
+    { "id": "labels_url", "alias": "labels_url", "dataType": "string", "description": "The url for the labels that belong to this milestone." },
+    { "id": "html_url", "alias": "html_url", "dataType": "string", "description": "The url for this milestone." },
+    { "id": "number", "alias": "number", "dataType": "int", "columnRole": "dimension", "description": "The milestone number." },
+    { "id": "state", "alias": "state", "dataType": "string", "description": "The state of this milestone ('open' or 'closed')." },
+    { "id": "title", "alias": "title", "dataType": "string", "description": "The title of this milestone." },
+    { "id": "user_id", "alias": "user_id", "dataType": "int", "columnRole": "dimension", "description": "The creator of this issue." },
+    { "id": "open_issues", "alias": "open_issues", "dataType": "string", "description": "Number of open issues in this milestone." },
+    { "id": "closed_issues", "alias": "closed_issues", "dataType": "string", "description": "Number of closed issues in this milestone" },
+    { "id": "closed_at", "alias": "closed_at", "dataType": "datetime", "description": "The last time this milestone was closed." },
+    { "id": "created_at", "alias": "created_at", "dataType": "datetime", "description": "The time this milestone was created." },
+    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this milestone was updated." },
+    { "id": "due_on", "alias": "due_on", "dataType": "datetime", "description": "The due date of this milestone." }
+  ]
+}

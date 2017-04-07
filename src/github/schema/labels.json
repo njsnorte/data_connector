@@ -1,0 +1,11 @@
+{
+  "alias": "labels",
+  "id": "labels",
+  "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "columnRole": "dimension", "description": "The id of this label." },
+    { "id": "url", "alias": "url", "dataType": "string", "description": "The url for this label." },
+    { "id": "name", "alias": "name", "dataType": "string", "description": "The name of this label." },
+    { "id": "color", "alias": "color", "dataType": "string", "description": "The hex code for the color of this label." },
+    { "id": "default", "alias": "default", "dataType": "bool", "description": "Is this a default label." }
+  ]
+}

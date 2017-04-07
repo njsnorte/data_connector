@@ -1,0 +1,27 @@
+{
+  "alias": "issues",
+  "id": "issues",
+  "columns": [
+    { "id": "id", "alias": "id", "dataType": "int", "description": "The identifier for this issue." },
+    { "id": "url", "alias": "url", "dataType": "string", "description": "The url for this issue." },
+    { "id": "repository_url", "alias": "repository_url", "dataType": "string", "description": "The url for the repository this issue belongs to." },
+    { "id": "labels_url", "alias": "labels_url", "dataType": "string", "description": "The url for the labels that belong to this repository." },
+    { "id": "comments_url", "alias": "comments_url", "dataType": "string", "description": "The url for comments on this issue." },
+    { "id": "events_url", "alias": "events_url", "dataType": "string", "description": "The url for events on this issue." },
+    { "id": "html_url", "alias": "html_url", "dataType": "string", "description": "The url for this issue." },
+    { "id": "number", "alias": "number", "dataType": "int", "columnRole": "dimension", "description": "The issue number." },
+    { "id": "state", "alias": "state", "dataType": "string", "description": "The state of this issue ('open' or 'closed')." },
+    { "id": "title", "alias": "title", "dataType": "string", "description": "The title of this issue." },
+    { "id": "body", "alias": "body", "dataType": "string", "description": "The body of this issue." },
+    { "id": "is_pull_request", "alias": "is_pull_request", "dataType": "bool", "description": "Whether this issue is a pull request." },
+    { "id": "locked", "alias": "locked", "dataType": "bool", "description": "Whether this issue is locked." },
+    { "id": "comments", "alias": "comments", "dataType": "int", "description": "The number of comments on this issue" },
+    { "id": "user_id", "alias": "user_id", "dataType": "int", "columnRole": "dimension", "description": "The creator of this issue." },
+    { "id": "milestone_id", "alias": "milestone_id", "dataType": "int", "columnRole": "dimension", "description": "The milestone this issue belongs to." },
+    { "id": "pull_id", "alias": "pull_id", "dataType": "int", "columnRole": "dimension", "description": "The pull request this issue belongs to." },
+    { "id": "repo_name", "alias": "repo_name", "dataType": "string", "description": "The repository this issue belongs to." },
+    { "id": "closed_at", "alias": "closed_at", "dataType": "datetime", "description": "The last time this issue was closed." },
+    { "id": "created_at", "alias": "created_at", "dataType": "datetime", "description": "The time this issue was created." },
+    { "id": "updated_at", "alias": "updated_at", "dataType": "datetime", "description": "The last time this issue was updated." }
+  ]
+}

@@ -1,0 +1,88 @@
+[
+  {
+    "alias": "Joined pull requests data",
+    "tables": [{
+      "id": "pulls",
+      "alias": "pulls"
+    }, {
+      "id": "assignees",
+      "alias": "assignees"
+    }, {
+      "id": "milestones",
+      "alias": "milestones"
+    }, {
+      "id": "users",
+      "alias": "pull_creators"
+    }, {
+      "id": "users",
+      "alias": "milestone_creators"
+    }, {
+      "id": "users",
+      "alias": "assignees_users"
+    }, {
+      "id" : "repos",
+      "alias": "repos"
+    }],
+    "joins": [{
+      "left": {
+        "tableAlias": "pulls",
+        "columnId": "id"
+      },
+      "right": {
+        "tableAlias": "assignees",
+        "columnId": "parent_id"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "pulls",
+        "columnId": "user_id"
+      },
+      "right": {
+        "tableAlias": "pull_creators",
+        "columnId": "id"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "pulls",
+        "columnId": "milestone_id"
+      },
+      "right": {
+        "tableAlias": "milestones",
+        "columnId": "id"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "milestones",
+        "columnId": "user_id"
+      },
+      "right": {
+        "tableAlias": "milestone_creators",
+        "columnId": "id"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "assignees",
+        "columnId": "user_id"
+      },
+      "right": {
+        "tableAlias": "assignees_users",
+        "columnId": "id"
+      },
+      "joinType": "left"
+    }, {
+      "left": {
+        "tableAlias": "pulls",
+        "columnId": "repo_id"
+      },
+      "right": {
+        "tableAlias": "repos",
+        "columnId": "id"
+      },
+      "joinType": "left"
+    }]
+  }
+]

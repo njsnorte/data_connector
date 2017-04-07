@@ -1,9 +1,0 @@
-{
-  "name": "github-data-connector",
-  "version": "0.0.0",
-  "dependencies": {
-    "material-design-lite": "~1",
-    "jquery": "~1.11",
-    "lodash": "~3.10.1"
-  }
-}
