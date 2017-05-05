@@ -1,6 +1,7 @@
 {
   "alias": "repositories",
   "id": "repos",
+  "incrementColumnId": "id",
   "columns": [
     { "id": "id", "alias": "id", "dataType": "int", "columnRole": "dimension", "description": "The identifier for this repository." },
     { "id": "name", "alias": "name", "dataType": "string", "description": "The name for this repository." },

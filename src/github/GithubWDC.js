@@ -130,12 +130,14 @@ class GithubWDC {
       gh
         .getData(urls, options, 5)
         .then((rawData) => {
-          return gh.processData(this._cache, tableId, rawData);
+          return gh.processData(this._cache, table, rawData);
       }).then((processedData) => {
           this._cache = processedData;
           return Promise.resolve(true);
       }).then(() => {
-          table.appendRows(this._cache[tableId]);
+          if (this._cache[tableId]) {
+            table.appendRows(this._cache[tableId]);
+          }
           cb();
       }).catch((err) => {
           tableau.abortWithError(err);
