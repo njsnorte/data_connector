@@ -11,11 +11,14 @@ Quickly pull in GitHub information from different repositories such as:
 - Traffic Stats
 
 An online version of the web data connector can be found here:
+- [https://github-web-data-connector.herokuapp.com/github/](https://github-web-data-connector.herokuapp.com/github/)
+
+An experimental version - including unreleased changes - can be found here:
 - [https://github-web-data-connector-dev.herokuapp.com/github/](https://github-web-data-connector-dev.herokuapp.com/github/)
 
 ## Quick Tutorial
 1. Open Tableau, navigate to web data connector and enter the following url:
-https://github-web-data-connector-dev.herokuapp.com/github/
+https://github-web-data-connector.herokuapp.com/github/
 
 2. Authenticate with your GitHub account.
 ![step2](https://cloud.githubusercontent.com/assets/8611594/24785643/7b6b56ea-1b10-11e7-9919-45427a66e510.png)
