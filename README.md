@@ -1,6 +1,6 @@
 <p align="left">
 <img src="tabird.png" alt="Tabird" width="50px" height="50px" align="left"/>
-<h1>Tabird</h1>
+<h1>Github Data Connector</h1>
 </p>
 
 A web data connector for Tableau to help you connect with GitHub data. 
