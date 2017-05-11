@@ -6,15 +6,15 @@ import debug from 'debug';
 const log = debug('traffic');
 
 /**
- * Make simple API calls to the Github API.
+ * Make simple API calls to the GitHub API.
  */
 class Traffic extends GithubObject {
 
   /**
-   * Initialize our Github API.
+   * Initialize our GitHub API.
    *
    * @param {Github.auth} [auth]
-   *  The credentials used to authenticate with Github. If not provided
+   *  The credentials used to authenticate with GitHub. If not provided
    *  requests will be made unauthenticated.
    * @param {string} [base]
    *  The base of the API url.
@@ -24,7 +24,7 @@ class Traffic extends GithubObject {
   }
 
   /**
-   * Returns the relevant Github schema objects for traffic stats.
+   * Returns the relevant GitHub schema objects for traffic stats.
    *
    * @return {Promise}
    *  Promise of schema object.
@@ -150,17 +150,9 @@ class Traffic extends GithubObject {
         }
 
         // Handle incremental refresh.
-        if (incrementalId && incrementalValue) {
-          switch (incrementalId) {
-            case 'timestamp':
-              if (Date.parse(obj[incrementalId]) > Date.parse(incrementalValue)) {
-                result[tableId].push(obj);
-              }
-              break;
-            default:
-              if (parseInt(obj[incrementalId]) > parseInt(incrementalValue)) {
-                result[tableId].push(obj);
-              }
+        if (incrementalId === 'timestamp' && incrementalValue) {
+          if (Date.parse(obj[incrementalId]) > Date.parse(incrementalValue)) {
+            result[tableId].push(obj);
           }
         }
         else {

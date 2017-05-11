@@ -135,9 +135,7 @@ class GithubWDC {
           this._cache = processedData;
           return Promise.resolve(true);
       }).then(() => {
-          if (this._cache[tableId]) {
-            table.appendRows(this._cache[tableId]);
-          }
+          table.appendRows(this._cache[tableId]);
           cb();
       }).catch((err) => {
           tableau.abortWithError(err);
@@ -151,6 +149,8 @@ class GithubWDC {
    * @param cb
    */
   shutdown(cb) {
+    // Clear cache
+    this._cache = {};
     cb();
   }
 
