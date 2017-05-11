@@ -130,7 +130,7 @@ class GithubWDC {
       gh
         .getData(urls, options, 5)
         .then((rawData) => {
-          return gh.processData(this._cache, tableId, rawData);
+          return gh.processData(this._cache, table, rawData);
       }).then((processedData) => {
           this._cache = processedData;
           return Promise.resolve(true);
@@ -149,6 +149,8 @@ class GithubWDC {
    * @param cb
    */
   shutdown(cb) {
+    // Clear cache
+    this._cache = {};
     cb();
   }
 

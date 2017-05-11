@@ -1,6 +1,7 @@
 {
   "alias": "views",
   "id": "traffic_views",
+  "incrementColumnId": "timestamp",
   "columns": [
     { "id": "repo_name", "alias": "repo_name", "dataType": "string", "description": "The repository these stats belongs to." },
     { "id": "timestamp", "alias": "timestamp", "dataType": "datetime", "description": "The timestamp for these stats." },

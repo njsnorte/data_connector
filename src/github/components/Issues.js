@@ -64,13 +64,13 @@ class Issues extends GithubObject {
    *
    * @param {Object} [result]
    *  An object where you wish to save the processed data onto.
-   * @param {string} [tableId]
-   *  The identifier of the table that is being requested.
+   * @param {Object} [table]
+   *  Table object which contains information about the columns and values.
    * @param {Array} [rawData]
    *  An array of objects to process.
    * @returns {Promise}
    */
-  processData(result, tableId, rawData) {
+  processData(result, table, rawData) {
     result = _.assignIn(result, {
       'assigned_labels': [],
       'assignees': [],

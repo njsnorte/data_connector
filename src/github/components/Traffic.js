@@ -6,15 +6,15 @@ import debug from 'debug';
 const log = debug('traffic');
 
 /**
- * Make simple API calls to the Github API.
+ * Make simple API calls to the GitHub API.
  */
 class Traffic extends GithubObject {
 
   /**
-   * Initialize our Github API.
+   * Initialize our GitHub API.
    *
    * @param {Github.auth} [auth]
-   *  The credentials used to authenticate with Github. If not provided
+   *  The credentials used to authenticate with GitHub. If not provided
    *  requests will be made unauthenticated.
    * @param {string} [base]
    *  The base of the API url.
@@ -24,7 +24,7 @@ class Traffic extends GithubObject {
   }
 
   /**
-   * Returns the relevant Github schema objects for traffic stats.
+   * Returns the relevant GitHub schema objects for traffic stats.
    *
    * @return {Promise}
    *  Promise of schema object.
@@ -95,13 +95,16 @@ class Traffic extends GithubObject {
    *
    * @param {Object} [result]
    *  An object where you wish to save the processed data onto.
-   * @param {string} [tableId]
-   *  The identifier of the table that is being requested.
+   * @param {Object} [table]
+   *  Table object which contains information about the columns and values.
    * @param {Array} [rawData]
    *  An array of objects to process.
    * @returns {Promise}
    */
-  processData(result, tableId, rawData) {
+  processData(result, table, rawData) {
+    const tableId = table.tableInfo.id,
+      incrementalId = table.tableInfo.incrementColumnId,
+      incrementalValue = table.incrementValue;
     let repo_owner, repo_name;
     result[tableId] = [];
 
@@ -121,22 +124,41 @@ class Traffic extends GithubObject {
         switch (tableId) {
           case 'traffic_views':
             _.forEach(obj.views, (obj) => {
-              obj.repo_name = repo_owner + '/' + repo_name;
-              result[tableId].push(obj);
+              pushData(obj);
             });
             break;
           case 'traffic_clones':
             _.forEach(obj.clones, (obj) => {
-              obj.repo_name = repo_owner + '/' + repo_name;
-              result[tableId].push(obj);
+              pushData(obj);
             });
             break;
           default:
-            obj.repo_name = repo_owner + '/' + repo_name;
-            result[tableId].push(obj);
+            pushData(obj);
             break;
         }
       });
+
+      // Closure that handles pushing data onto the result stack.
+      function pushData(obj) {
+        obj.repo_name = repo_owner + '/' + repo_name;
+
+        // Add an additional timestamp field - if not provided by GitHub -
+        // to support incremental refreshes. We set the timestamp to the
+        // beginning of a day (i.e. 12 AM)
+        if (!_.has(obj, 'timestamp')) {
+          obj['timestamp'] = new Date(new Date().setHours(0,0,0,0)).toISOString();
+        }
+
+        // Handle incremental refresh.
+        if (incrementalId === 'timestamp' && incrementalValue) {
+          if (Date.parse(obj[incrementalId]) > Date.parse(incrementalValue)) {
+            result[tableId].push(obj);
+          }
+        }
+        else {
+          result[tableId].push(obj);
+        }
+      }
 
       resolve(result);
     });
